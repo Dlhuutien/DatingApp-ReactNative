@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 
 const ChatScreen = ({ route }) => {
-  const { item } = route.params; // Access the passed params
+  const { item } = route.params;
 
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
@@ -55,7 +55,7 @@ const ChatScreen = ({ route }) => {
 
             {/* Hàng thứ hai: Thông tin cá nhân */}
             <View style={styles.profileInfo}>
-              <Image source={item.image} style={styles.profileImage} />
+              <Image source={{uri: item.image}} style={styles.profileImage} />
               <View style={styles.textContainer}>
                 <Text style={styles.name}>
                   {item.name}, {item.age}{" "}

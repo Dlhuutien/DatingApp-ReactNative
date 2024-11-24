@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,13 +9,25 @@ import {
   FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import usersData from "../data/usersData";
+// import usersData from "../data/usersData";
 import { useSelector } from "react-redux";
+import { fetchUserData } from "../data/connectMockAPI";
 
 export default ChatCard = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(true);
+
+  const [usersData, setUsersData] = useState([]);
+  useEffect(() => {
+    fetchUserData()
+      .then(data => {
+        setUsersData(data);
+      })
+      .catch(error => {
+        console.error("Failed to fetch users:", error);
+      });
+  }, []);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -48,7 +60,7 @@ export default ChatCard = () => {
                 <TouchableOpacity
                   onPress={() => navigation.navigate("ChatScreen", { item })}
                 >
-                  <Image source={item.image} style={styles.matchProfile} />
+                  <Image source={{uri:item.image}} style={styles.matchProfile} />
                 </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id.toString()}
@@ -114,7 +126,7 @@ export default ChatCard = () => {
         onPress={() => navigation.navigate("ChatScreen", { item })}
       >
         <View style={styles.chatItem}>
-          <Image source={item.image} style={styles.chatImage} />
+          <Image source={{uri:item.image}} style={styles.chatImage} />
           <View style={styles.chatDetails}>
             <View style={styles.chatHeader}>
               {/* <Text style={styles.chatName}>{item.messages[item.messages.length - 1].senderId}</Text> */}

@@ -13,7 +13,6 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { ProgressBar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import usersData from "../data/usersData";
 
 import { useSelector } from "react-redux";
 

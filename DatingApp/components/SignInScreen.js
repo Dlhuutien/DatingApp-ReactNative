@@ -17,10 +17,6 @@ export default SignInScreen = () => {
     navigation.navigate("Settings");
   };
 
-  // const changeLanguage = (lang) => {
-  //   i18n.changeLanguage(lang); // Thay đổi ngôn ngữ
-  // };
-
   return (
     <View style={styles.container}>
       {/* Logo */}

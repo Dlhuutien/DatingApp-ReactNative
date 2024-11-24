@@ -14,25 +14,50 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { setUser } from "./redux/userSlice";
 import { useDispatch } from "react-redux";
-import userData from "../data/usersData";
-
+// import userData from "../data/usersData";
+import { fetchUserData } from "../data/connectMockAPI";
 
 const PhoneSignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
+  const [usersData, setUsersData] = useState([]);
+  useEffect(() => {
+    fetchUserData()
+      .then(data => {
+        setUsersData(data);
+      })
+      .catch(error => {
+        console.error("Failed to fetch users:", error);
+      });
+  }, []);
+
   const handlePhoneSignIn = () => {
     console.log("Phone number entered: ", phoneNumber);
-    const user = userData.find((user) => user.phoneNumber === phoneNumber);
+    const user = usersData.find((user) => user.phoneNumber === phoneNumber);
 
     if (user) {
       dispatch(setUser(user));
       navigation.navigate("Profile");
+      // console.log("Thanh cong");
     } else {
       alert("Phone number not found!");
     }
   };
+
+
+  // const handlePhoneSignIn = () => {
+  //   console.log("Phone number entered: ", phoneNumber);
+  //   const user = userData.find((user) => user.phoneNumber === phoneNumber);
+
+  //   if (user) {
+  //     dispatch(setUser(user));
+  //     navigation.navigate("Profile");
+  //   } else {
+  //     alert("Phone number not found!");
+  //   }
+  // };
 
   return (
     <KeyboardAvoidingView
