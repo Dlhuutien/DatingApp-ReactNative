@@ -10,10 +10,13 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+
 
 export default SubscriptionCard = () => {
   const [selectedTab, setSelectedTab] = useState("Plans");
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   //Lấy DATA từ Redux
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -36,7 +39,7 @@ export default SubscriptionCard = () => {
             style={styles.editProfileButton}
             onPress={handleEdit}
           >
-            <Text style={styles.editProfileButtonText}>Edit your profile</Text>
+            <Text style={styles.editProfileButtonText}>{t("Edit your profile")}</Text>
           </TouchableOpacity>
           <Text style={styles.completionText}>45% complete</Text>
         </View>

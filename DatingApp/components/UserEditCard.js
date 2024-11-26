@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { ProgressBar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+// import usersData from "../data/usersData";
 
 import { useSelector } from "react-redux";
 
@@ -44,17 +45,18 @@ export default ProfileEditCard = () => {
   const zodiacSigns = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
   const religions = ["Việt Nam", "Other"];
 
-  const [occupation, setOccupation] = useState(currentUser.profileDetails.occupation|| "Add");
+  const [occupation, setOccupation] = useState(currentUser.profileDetails.occupation || "Add");
   const [gender, setGender] = useState(currentUser.profileDetails.gender || "Add");
-  const [education, setEducation] = useState("Add");
-  const [location, setLocation] = useState("Add");
-  const [height, setHeight] = useState("Add");
-  const [smoking, setSmoking] = useState("Add");
-  const [drinking, setDrinking] = useState("Add");
-  const [pets, setPets] = useState("Add");
-  const [children, setChildren] = useState("Add");
-  const [zodiac, setZodiac] = useState("Add");
-  const [religion, setReligion] = useState("Add");
+  const [education, setEducation] = useState(currentUser.profileDetails.education || "Add");
+  const [location, setLocation] = useState(currentUser.profileDetails.location || "Add");
+  const [height, setHeight] = useState(currentUser.profileDetails.height || "Add");
+  const [smoking, setSmoking] = useState(currentUser.profileDetails.smoking || "Add");
+  const [drinking, setDrinking] = useState(currentUser.profileDetails.drinking || "Add");
+  const [pets, setPets] = useState(currentUser.profileDetails.pets || "Add");
+  const [children, setChildren] = useState(currentUser.profileDetails.children || "Add");
+  const [zodiac, setZodiac] = useState(currentUser.profileDetails.zodiac || "Add");
+  const [religion, setReligion] = useState(currentUser.profileDetails.religion || "Add");
+  
 
   return (
     <ScrollView style={styles.container}>

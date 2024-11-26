@@ -17,10 +17,15 @@ import { useDispatch } from "react-redux";
 // import userData from "../data/usersData";
 import { fetchUserData } from "../data/connectMockAPI";
 
+import { useTranslation } from "react-i18next";
+
+
 const PhoneSignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const [usersData, setUsersData] = useState([]);
   useEffect(() => {
@@ -90,7 +95,7 @@ const PhoneSignIn = () => {
             <Text style={styles.title}>HeartSync</Text>
           </View>
 
-          <Text style={styles.title}>Sign In with Phone Number</Text>
+          <Text style={styles.title}>{t("LoginNumber")}</Text>
 
           <TextInput
             style={styles.input}

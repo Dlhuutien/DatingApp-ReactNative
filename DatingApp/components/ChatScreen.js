@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   ScrollView,
+  FlatList,
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
@@ -22,9 +23,71 @@ const ChatScreen = ({ route }) => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   const [showMiniGameInvite, setShowMiniGameInvite] = useState(false);
+  // Lưu trữ tin nhắn
+  const [messageText, setMessageText] = useState("");
+  const [messages, setMessages] = useState(item.messages || []);
+
+  // const [allMessages, setAllMessages] = useState([]);
+  // useEffect(() => {
+  //   // Gộp và sắp xếp các tin nhắn theo thời gian từ item.messages
+  //   const mergedMessages = item.messages
+  //     .sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt)); // Sắp xếp theo thời gian
+  //   setAllMessages(mergedMessages);
+  // }, [item]); // Cập nhật khi item thay đổi
 
   const toggleMiniGameInvite = () => {
     setShowMiniGameInvite(!showMiniGameInvite);
+  };
+
+  const sendMessage = async () => {
+    // Kiểm tra tin nhắn trống
+    if (!messageText.trim()) return;
+
+    // Lấy id mới dựa trên ID lớn nhất trong messages
+    const newId =
+      item.messages.length > 0
+        ? Math.max(...item.messages.map((msg) => msg.id)) + 1
+        : 1;
+
+    const newMessage = {
+      id: newId,
+      content: messageText,
+      sentAt: new Date().toISOString(),
+      senderId: currentUser.id, // Id của người gửi
+    };
+
+    // Cập nhật mảng messages của item
+    const updatedItem = {
+      ...item,
+      messages: [...item.messages, newMessage], // Thêm tin nhắn mới vào mảng messages
+    };
+
+    try {
+      // Gửi yêu cầu PUT để cập nhật tin nhắn vào MockAPI
+      const response = await fetch(
+        `https://6742e26fb7464b1c2a62f2eb.mockapi.io/User/${item.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Gửi toàn bộ item đã cập nhật, bao gồm cả tin nhắn mới
+          body: JSON.stringify(updatedItem),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Message sent successfully:", data);
+        // Cập nhật danh sách tin nhắn trong trạng thái
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        setMessageText(""); // Xóa nội dung nhập
+      } else {
+        console.error("Message sending failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Message sending error:", error);
+    }
   };
 
   return (
@@ -49,13 +112,17 @@ const ChatScreen = ({ route }) => {
                 <Icon name="videocam-outline" size={24} color="black" />
               </TouchableOpacity>
               <TouchableOpacity>
-                <Icon name="ellipsis-vertical-outline" size={24} color="black" />
+                <Icon
+                  name="ellipsis-vertical-outline"
+                  size={24}
+                  color="black"
+                />
               </TouchableOpacity>
             </View>
 
             {/* Hàng thứ hai: Thông tin cá nhân */}
             <View style={styles.profileInfo}>
-              <Image source={{uri: item.image}} style={styles.profileImage} />
+              <Image source={{ uri: item.image }} style={styles.profileImage} />
               <View style={styles.textContainer}>
                 <Text style={styles.name}>
                   {item.name}, {item.age}{" "}
@@ -75,25 +142,27 @@ const ChatScreen = ({ route }) => {
             contentContainerStyle={{ paddingBottom: 20 }}
             keyboardShouldPersistTaps="handled"
           >
-            {item.messages.map((message) => (
-              <View
-                key={message.id}
-                style={[
-                  styles.message,
-                  message.senderId === currentUser.id
-                    ? styles.sentMessage
-                    : styles.receivedMessage,
-                ]}
-              >
-                <Text style={styles.messageText}>{message.content}</Text>
-                <Text style={styles.timeText}>
-                  {new Date(message.sentAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </View>
-            ))}
+            {messages.map((message) => {
+              const isSentByCurrentUser = message.senderId === currentUser.id;
+              return (
+                <View
+                  key={message.id}
+                  style={
+                    isSentByCurrentUser
+                      ? styles.sentMessage
+                      : styles.receivedMessage
+                  }
+                >
+                  <Text style={styles.messageText}>{message.content}</Text>
+                  <Text style={styles.timeText}>
+                    {new Date(message.sentAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+              );
+            })}
           </ScrollView>
 
           {/* Mini-Game Invite */}
@@ -118,14 +187,14 @@ const ChatScreen = ({ route }) => {
             <TextInput
               placeholder="Type a message..."
               style={styles.input}
-              onFocus={() => {
-                // Có thể thêm logic nếu cần
-              }}
+              value={messageText} // Gắn giá trị tin nhắn
+              onChangeText={setMessageText} // Cập nhật khi người dùng nhập
             />
             <TouchableOpacity>
               <Icon name="happy-outline" size={24} color="gray" />
             </TouchableOpacity>
-            <TouchableOpacity>
+            {/* Gửi tin nhăn */}
+            <TouchableOpacity onPress={sendMessage}>
               <Icon name="send" size={24} color="skyblue" />
             </TouchableOpacity>
           </View>
@@ -155,7 +224,7 @@ const styles = StyleSheet.create({
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10, // Tạo khoảng cách với hàng trên
+    marginTop: 10,
   },
   profileImage: {
     width: 60,
@@ -200,8 +269,11 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   receivedMessage: {
-    alignSelf: "flex-end",
-    backgroundColor: "#00bfff",
+    alignSelf: "flex-start",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 15,
+    padding: 10,
+    marginVertical: 5,
   },
   messageText: {
     color: "white",

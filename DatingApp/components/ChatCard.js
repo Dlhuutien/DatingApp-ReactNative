@@ -21,10 +21,10 @@ export default ChatCard = () => {
   const [usersData, setUsersData] = useState([]);
   useEffect(() => {
     fetchUserData()
-      .then(data => {
+      .then((data) => {
         setUsersData(data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Failed to fetch users:", error);
       });
   }, []);
@@ -60,7 +60,10 @@ export default ChatCard = () => {
                 <TouchableOpacity
                   onPress={() => navigation.navigate("ChatScreen", { item })}
                 >
-                  <Image source={{uri:item.image}} style={styles.matchProfile} />
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.matchProfile}
+                  />
                 </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id.toString()}
@@ -76,19 +79,27 @@ export default ChatCard = () => {
 
   const getTimeAgo = (sentAt) => {
     const now = new Date();
-    const sentAtDate = new Date(sentAt); // Chuyển sentAt thành đối tượng Date
-    const diffInMilliseconds = now - sentAtDate; // Chênh lệch giữa thời gian hiện tại và sentAt
+    // Chuyển sentAt thành đối tượng Date
+    const sentAtDate = new Date(sentAt);
+    // Chênh lệch giữa thời gian hiện tại và sentAt
+    const diffInMilliseconds = now - sentAtDate;
 
-    const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60)); // Chuyển chênh lệch thành phút
-    const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60)); // Chuyển chênh lệch thành giờ
-    const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Chuyển chênh lệch thành ngày
+    // Chuyển chênh lệch thành phút
+    const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
+    // Chuyển chênh lệch thành giờ
+    const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+    // Chuyển chênh lệch thành ngày
+    const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 
-    const currentYear = now.getFullYear(); // Lấy năm hiện tại
-    const sentAtYear = sentAtDate.getFullYear(); // Lấy năm của sentAt
+    // Lấy năm hiện tại
+    const currentYear = now.getFullYear();
+    // Lấy năm của sentAt
+    const sentAtYear = sentAtDate.getFullYear();
 
     if (diffInDays > 7) {
       const day = sentAtDate.getDate();
-      const month = sentAtDate.getMonth() + 1; // Tháng bắt đầu từ 0
+      // Tháng bắt đầu từ 0
+      const month = sentAtDate.getMonth() + 1;
       // Kiểm tra nếu không phải năm hiện tại thì thêm năm vào
       if (sentAtYear !== currentYear) {
         return `${day < 10 ? "0" + day : day}/${
@@ -111,29 +122,28 @@ export default ChatCard = () => {
 
   const renderChatItem = ({ item }) => {
     if (item.id === currentUser.id) {
-      return null; // Nếu item.id trùng với currentUser.id thì không render item này
+      // Nếu item.id trùng với currentUser.id thì không render item
+      return null;
     }
 
+    const lastMessage = item.messages[item.messages.length - 1];
     // Kiểm tra nếu người gửi là người dùng hiện tại
-    const isCurrentUser =
-      item.messages[item.messages.length - 1].senderId === currentUser.id;
+    const isCurrentUser = lastMessage.senderId === currentUser.id;
     const messageContent = isCurrentUser
-      ? `You: ${item.messages[item.messages.length - 1].content}`
-      : item.messages[item.messages.length - 1].content;
+    ? `You: ${lastMessage.content}`
+    : lastMessage.content;
 
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate("ChatScreen", { item })}
       >
         <View style={styles.chatItem}>
-          <Image source={{uri:item.image}} style={styles.chatImage} />
+          <Image source={{ uri: item.image }} style={styles.chatImage} />
           <View style={styles.chatDetails}>
             <View style={styles.chatHeader}>
-              {/* <Text style={styles.chatName}>{item.messages[item.messages.length - 1].senderId}</Text> */}
-              {/* <Text style={styles.chatName}>{currentUser.id}</Text> */}
               <Text style={styles.chatName}>{item.name}</Text>
               <Text style={styles.chatTime}>
-                {getTimeAgo(item.messages[item.messages.length - 1].sentAt)}
+                {getTimeAgo(lastMessage.sentAt)}
               </Text>
             </View>
             <Text style={styles.chatDetail}>{messageContent}</Text>
