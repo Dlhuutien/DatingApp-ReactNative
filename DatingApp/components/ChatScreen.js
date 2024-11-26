@@ -143,14 +143,17 @@ const ChatScreen = ({ route }) => {
             keyboardShouldPersistTaps="handled"
           >
             {messages.map((message) => {
+              // Kiểm tra xem tin nhắn là của người dùng hiện tại hay của item
               const isSentByCurrentUser = message.senderId === currentUser.id;
+              const isReceivedByCurrentUser = message.senderId === item.id;
+
               return (
                 <View
                   key={message.id}
                   style={
-                    isSentByCurrentUser
-                      ? styles.sentMessage
-                      : styles.receivedMessage
+                    isSentByCurrentUser ? styles.sentMessage : 
+                    isReceivedByCurrentUser ? styles.receivedMessage
+                    : null
                   }
                 >
                   <Text style={styles.messageText}>{message.content}</Text>
