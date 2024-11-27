@@ -19,3 +19,14 @@ export const fetchMessages = async () => {
     throw error;
   }
 };
+export const updateUserProfile = async (userId, profileDetails) => {
+  try {
+    const response = await axios.put(`https://6742e26fb7464b1c2a62f2eb.mockapi.io/User/${userId}`, {
+      profileDetails,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    throw error;
+  }
+};

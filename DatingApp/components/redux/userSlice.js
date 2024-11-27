@@ -11,10 +11,18 @@ const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       // Lưu dữ liệu người dùng vào state
-      state.currentUser = action.payload; 
+      state.currentUser = action.payload;
+    },
+    updateProfileDetails: (state, action) => {
+      if (state.currentUser) {
+        state.currentUser.profileDetails = {
+          ...state.currentUser.profileDetails,
+          ...action.payload,
+        };
+      }
     },
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, updateProfileDetails } = userSlice.actions;
 export default userSlice.reducer;

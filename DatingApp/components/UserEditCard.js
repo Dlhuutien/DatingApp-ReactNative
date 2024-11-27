@@ -13,7 +13,10 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { ProgressBar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 // import usersData from "../data/usersData";
+import { updateProfileDetails } from "./redux/userSlice";
+import { updateUserProfile } from "../data/connectMockAPI";
 
 import { useSelector } from "react-redux";
 
@@ -21,6 +24,7 @@ export default ProfileEditCard = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const [profileCompletion, setProfileCompletion] = useState(45);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   // Add
   const [occupationModalVisible, setOccupationModalVisible] = useState(false);
@@ -39,11 +43,13 @@ export default ProfileEditCard = () => {
   const occupations = ["Student", "Engineer", "Teacher", "Doctor", "Designer", "Other"];
   const genders = ["Male", "Female", "Other"];
   const educations = ["High School", "Bachelor", "Master", "PhD", "Other"];
-  const locations = ["New York", "London", "Paris", "Tokyo", "Other"];
+  const locations = ["Hà Nội", "Hồ Chí Minh", "Đà Nẵng", "Cần Thơ", "Other"];
   const heights = ["Below 100cm", "101cm - 150cm", "151cm - 170cm", "Above 170cm"];
   const yesNoOptions = ["Yes", "No"];
   const zodiacSigns = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-  const religions = ["Việt Nam", "Other"];
+  const religions = ["None", "Christianity", "Buddhism", "Hinduism", "Islam", "Judaism", "Other"];
+  const drinks = ["No", "Occasionally", "Socially", "Frequently"];
+  const pet = ["No", "Dog", "Cat", "Bird", "Fish", "Other"];
 
   const [occupation, setOccupation] = useState(currentUser.profileDetails.occupation || "Add");
   const [gender, setGender] = useState(currentUser.profileDetails.gender || "Add");
@@ -56,7 +62,26 @@ export default ProfileEditCard = () => {
   const [children, setChildren] = useState(currentUser.profileDetails.children || "Add");
   const [zodiac, setZodiac] = useState(currentUser.profileDetails.zodiac || "Add");
   const [religion, setReligion] = useState(currentUser.profileDetails.religion || "Add");
+
+  const handleCloseModal = async (setModalVisible, field, value) => {
+    try {
+      const updatedProfileDetails = { [field]: value };
   
+      // Gọi API để cập nhật server
+      await updateUserProfile(currentUser.id, {
+        ...currentUser.profileDetails,
+        ...updatedProfileDetails,
+      });
+  
+      // Cập nhật Redux state
+      dispatch(updateProfileDetails(updatedProfileDetails));
+      console.log("Update complete", value);
+      // Đóng modal
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Error updating profile detail:", error);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -141,11 +166,11 @@ export default ProfileEditCard = () => {
         {[
           ["Height", heightModalVisible, setHeightModalVisible, height, setHeight, heights],
           ["Smoking", smokingModalVisible, setSmokingModalVisible, smoking, setSmoking, yesNoOptions],
-          ["Drinking", drinkingModalVisible, setDrinkingModalVisible, drinking, setDrinking, yesNoOptions],
-          ["Pets", petsModalVisible, setPetsModalVisible, pets, setPets, yesNoOptions],
+          ["Drinking", drinkingModalVisible, setDrinkingModalVisible, drinking, setDrinking, drinks],
+          ["Pets", petsModalVisible, setPetsModalVisible, pets, setPets, pet],
           ["Children", childrenModalVisible, setChildrenModalVisible, children, setChildren, yesNoOptions],
           ["Zodiac sign", zodiacModalVisible, setZodiacModalVisible, zodiac, setZodiac, zodiacSigns],
-          ["Religion", religionModalVisible, setReligionModalVisible, religion, setReligion, ["Christianity", "Islam", "Buddhism", "Hinduism", "Other"]]
+          ["Religion", religionModalVisible, setReligionModalVisible, religion, setReligion, religions]
         ].map(([label, modalVisible, setModalVisible, value, setValue, options], index) => (
           <TouchableOpacity
             key={index}
@@ -159,18 +184,18 @@ export default ProfileEditCard = () => {
       </View>
        {/* Modals for all fields */}
        {[
-        [occupationModalVisible, setOccupationModalVisible, occupations, setOccupation],
-        [genderModalVisible, setGenderModalVisible, genders, setGender],
-        [educationModalVisible, setEducationModalVisible, educations, setEducation],
-        [locationModalVisible, setLocationModalVisible, locations, setLocation],
-        [heightModalVisible, setHeightModalVisible, heights, setHeight],
-        [smokingModalVisible, setSmokingModalVisible, yesNoOptions, setSmoking],
-        [drinkingModalVisible, setDrinkingModalVisible, yesNoOptions, setDrinking],
-        [petsModalVisible, setPetsModalVisible, yesNoOptions, setPets],
-        [childrenModalVisible, setChildrenModalVisible, yesNoOptions, setChildren],
-        [zodiacModalVisible, setZodiacModalVisible, zodiacSigns, setZodiac],
-        [religionModalVisible, setReligionModalVisible, religions, setReligion]
-      ].map(([modalVisible, setModalVisible, options, setValue], index) => (
+        [occupationModalVisible, setOccupationModalVisible, occupations, setOccupation, 'occupation'],
+        [genderModalVisible, setGenderModalVisible, genders, setGender, 'gender'],
+        [educationModalVisible, setEducationModalVisible, educations, setEducation, 'education'],
+        [locationModalVisible, setLocationModalVisible, locations, setLocation, 'location'],
+        [heightModalVisible, setHeightModalVisible, heights, setHeight, 'height'],
+        [smokingModalVisible, setSmokingModalVisible, yesNoOptions, setSmoking, 'smoking'],
+        [drinkingModalVisible, setDrinkingModalVisible, drinks, setDrinking, 'drinking'],
+        [petsModalVisible, setPetsModalVisible, pet, setPets, 'pet'],
+        [childrenModalVisible, setChildrenModalVisible, yesNoOptions, setChildren, 'children'],
+        [zodiacModalVisible, setZodiacModalVisible, zodiacSigns, setZodiac, 'zodiac'],
+        [religionModalVisible, setReligionModalVisible, religions, setReligion,'religion']
+      ].map(([modalVisible, setModalVisible, options, setValue, field], index) => (
         <Modal
           key={index}
           visible={modalVisible}
@@ -188,7 +213,7 @@ export default ProfileEditCard = () => {
                     style={styles.optionItem}
                     onPress={() => {
                       setValue(item);
-                      setModalVisible(false);
+                      handleCloseModal(setModalVisible, field, item);
                     }}
                   >
                     <Text style={styles.optionText}>{item}</Text>
