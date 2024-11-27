@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -13,12 +13,11 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { ProgressBar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import usersData from "../data/usersData";
 import { updateProfileDetails } from "./redux/userSlice";
 import { updateUserProfile } from "../data/connectMockAPI";
 import { UserProfileCompletion } from "./UserProfileCompletion";
-import { useSelector } from "react-redux";
 
 export default ProfileEditCard = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -78,14 +77,39 @@ export default ProfileEditCard = () => {
       console.log("Update complete", value);
 
       // Tính toán lại tiến độ hoàn thành profile
-      calculateProfileCompletion();
-
+      profileCompletion;
       // Đóng modal
       setModalVisible(false);
     } catch (error) {
       console.error("Error updating profile detail:", error);
     }
   };
+
+
+  // State for managing 'I enjoy' section
+  const [enjoyments, setEnjoyments] = useState(currentUser.profileDetails.enjoyments || []);
+  const [showEnjoymentsModal, setShowEnjoymentsModal] = useState(false);
+
+  // List of popular enjoyments (You can customize this list)
+  const popularEnjoyments = [
+    "Sci-fi movies", "Coffee brewing", "Trekking", "Cooking", "Gaming", "Reading",
+    "Traveling", "Photography", "Music", "Sports"
+  ];
+
+   const handleAddEnjoyment = (enjoyment) => {
+    if (!enjoyments.includes(enjoyment)) {
+      setEnjoyments([...enjoyments, enjoyment]);
+    }
+    setShowEnjoymentsModal(false); 
+  };
+
+  // Handle saving the updated profile
+  const handleSaveProfile = () => {
+    // Save the updated enjoyments to Redux or backend
+    dispatch(updateProfileDetails({ enjoyments }));
+    console.log("Updated Enjoyments:", enjoyments);
+  };
+
 
   return (
     <ScrollView style={styles.container}>
@@ -236,18 +260,61 @@ export default ProfileEditCard = () => {
         </Modal>
       ))}
 
-      {/* I Enjoy Section */}
-      <View style={styles.section}>
+       {/* I Enjoy Section */}
+       <View style={styles.section}>
         <Text style={styles.sectionTitle}>I enjoy</Text>
         <Text style={styles.subText}>
           Adding your interests is a great way to find like-minded connections.
         </Text>
         <View style={styles.tags}>
-          <Text style={styles.tag}>Sci-fi movies</Text>
-          <Text style={styles.tag}>Coffee brewing</Text>
-          <Text style={styles.tag}>Trekking</Text>
+          {enjoyments.map((item, index) => (
+            <Text key={index} style={styles.tag}>{item}</Text>
+          ))}
         </View>
+
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setShowEnjoymentsModal(true)}
+        >
+          <Text style={styles.addButtonText}>Add Enjoyment</Text>
+        </TouchableOpacity>
       </View>
+
+      {/* Modal for selecting enjoyment */}
+      <Modal
+        visible={showEnjoymentsModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowEnjoymentsModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Enjoyment</Text>
+            <FlatList
+              data={popularEnjoyments}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.optionItem}
+                  onPress={() => handleAddEnjoyment(item)}
+                >
+                  <Text style={styles.optionText}>{item}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item}
+            />
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setShowEnjoymentsModal(false)}
+            >
+              <Text style={styles.modalCloseText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* Save Button */}
+      <TouchableOpacity style={styles.saveButton} onPress={handleSaveProfile}>
+        <Text style={styles.saveButtonText}>Save Profile</Text>
+      </TouchableOpacity>
 
       {/* Language Section */}
       <View style={styles.section}>
@@ -397,4 +464,29 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
   },
+
+
+  addButton: {
+    backgroundColor: "#00C4CC",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 15,
+    alignItems: "center",
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+
 });
