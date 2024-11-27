@@ -8,7 +8,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   ScrollView,
-  FlatList,
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
@@ -16,6 +15,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import { fetchMessages } from "../data/connectMockAPI";
 
 const ChatScreen = ({ route }) => {
   const { item } = route.params;
@@ -25,7 +25,23 @@ const ChatScreen = ({ route }) => {
   const [showMiniGameInvite, setShowMiniGameInvite] = useState(false);
   // Lưu trữ tin nhắn
   const [messageText, setMessageText] = useState("");
-  const [messages, setMessages] = useState(item.messages || []);
+  // const [messages, setMessages] = useState(item.messages || []);
+
+  const [messagesData, setMessagesData] = useState([]);
+
+  useEffect(() => {
+    // Tải dữ liệu tin nhắn từ MockAPI
+    fetchMessages()
+      .then((data) => {
+        const filteredMessages = data.filter(
+          (msg) =>
+            (msg.senderId === currentUser.id && msg.receiverId === item.id) ||
+            (msg.senderId === item.id && msg.receiverId === currentUser.id)
+        );
+        setMessagesData(filteredMessages);
+      })
+      .catch((error) => console.error("Failed to fetch messages:", error));
+  }, [currentUser.id, item.id]);
 
   // const [allMessages, setAllMessages] = useState([]);
   // useEffect(() => {
@@ -44,44 +60,62 @@ const ChatScreen = ({ route }) => {
     if (!messageText.trim()) return;
 
     // Lấy id mới dựa trên ID lớn nhất trong messages
-    const newId =
-      item.messages.length > 0
-        ? Math.max(...item.messages.map((msg) => msg.id)) + 1
-        : 1;
+    // const newId =
+    //   item.messages.length > 0
+    //     ? Math.max(...item.messages.map((msg) => msg.id)) + 1
+    //     : 1;
+
+    // const newMessage = {
+    //   id: newId,
+    //   content: messageText,
+    //   sentAt: new Date().toISOString(),
+    //   senderId: currentUser.id, // Id của người gửi
+    //   receiverId: item.id, // Id của người nhận
+    // };
 
     const newMessage = {
-      id: newId,
+      // id: messagesData.length + 1,
       content: messageText,
       sentAt: new Date().toISOString(),
-      senderId: currentUser.id, // Id của người gửi
+      senderId: currentUser.id,
+      receiverId: item.id,
     };
 
-    // Cập nhật mảng messages của item
-    const updatedItem = {
-      ...item,
-      messages: [...item.messages, newMessage], // Thêm tin nhắn mới vào mảng messages
-    };
+    // // Cập nhật mảng messages của item
+    // const updatedItem = {
+    //   ...item,
+    //   messages: [...item.messages, newMessage], // Thêm tin nhắn mới vào mảng messages
+    // };
 
     try {
       // Gửi yêu cầu PUT để cập nhật tin nhắn vào MockAPI
       const response = await fetch(
-        `https://6742e26fb7464b1c2a62f2eb.mockapi.io/User/${item.id}`,
+        `https://6742e26fb7464b1c2a62f2eb.mockapi.io/Message`,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           // Gửi toàn bộ item đã cập nhật, bao gồm cả tin nhắn mới
-          body: JSON.stringify(updatedItem),
+          // body: JSON.stringify(updatedItem),
+          body: JSON.stringify(newMessage),
         }
       );
 
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   console.log("Message sent successfully:", data);
+      //   // Cập nhật danh sách tin nhắn trong trạng thái
+      //   setMessages((prevMessages) => [...prevMessages, newMessage]);
+      //   setMessageText(""); // Xóa nội dung nhập
+      // } else {
+      //   console.error("Message sending failed:", response.statusText);
+      // }
       if (response.ok) {
-        const data = await response.json();
-        console.log("Message sent successfully:", data);
-        // Cập nhật danh sách tin nhắn trong trạng thái
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        setMessageText(""); // Xóa nội dung nhập
+        const savedMessage = await response.json();
+        // setMessagesData((prev) => [...prev, newMessage]);
+        setMessagesData((prev) => [...prev, savedMessage]);
+        setMessageText("");
       } else {
         console.error("Message sending failed:", response.statusText);
       }
@@ -137,7 +171,7 @@ const ChatScreen = ({ route }) => {
           </View>
 
           {/* Message Container */}
-          <ScrollView
+          {/* <ScrollView
             style={styles.messageContainer}
             contentContainerStyle={{ paddingBottom: 20 }}
             keyboardShouldPersistTaps="handled"
@@ -154,6 +188,34 @@ const ChatScreen = ({ route }) => {
                     isSentByCurrentUser ? styles.sentMessage : 
                     isReceivedByCurrentUser ? styles.receivedMessage
                     : null
+                  }
+                >
+                  <Text style={styles.messageText}>{message.content}</Text>
+                  <Text style={styles.timeText}>
+                    {new Date(message.sentAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+              );
+            })}
+          </ScrollView> */}
+            <ScrollView
+            style={styles.messageContainer}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            {messagesData.map((message) => {
+              const isSentByCurrentUser = message.senderId === currentUser.id;
+              return (
+                <View
+                  // key={message.id}
+                  key={`${message.id}-${message.sentAt}`}
+                  style={
+                    isSentByCurrentUser
+                      ? styles.sentMessage
+                      : styles.receivedMessage
                   }
                 >
                   <Text style={styles.messageText}>{message.content}</Text>

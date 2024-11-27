@@ -11,7 +11,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 // import usersData from "../data/usersData";
 import { useSelector } from "react-redux";
-import { fetchUserData } from "../data/connectMockAPI";
+import { fetchUserData, fetchMessages } from "../data/connectMockAPI";
 
 export default ChatCard = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -19,15 +19,29 @@ export default ChatCard = () => {
   const [isModalVisible, setModalVisible] = useState(true);
 
   const [usersData, setUsersData] = useState([]);
+  const [messagesData, setMessagesData] = useState([]);
+
   useEffect(() => {
+    // Tải dữ liệu người dùng
     fetchUserData()
-      .then((data) => {
-        setUsersData(data);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch users:", error);
-      });
+      .then((data) => setUsersData(data))
+      .catch((error) => console.error("Failed to fetch users:", error));
+
+    // Tải dữ liệu tin nhắn
+    fetchMessages()
+      .then((data) => setMessagesData(data))
+      .catch((error) => console.error("Failed to fetch messages:", error));
   }, []);
+
+  const getLastMessage = (userId) => {
+    // Lọc tin nhắn của user hiện tại với user khác
+    const userMessages = messagesData.filter(
+      (msg) =>
+        (msg.senderId === currentUser.id && msg.receiverId === userId) ||
+        (msg.receiverId === currentUser.id && msg.senderId === userId)
+    );
+    return userMessages[userMessages.length - 1]; // Tin nhắn cuối cùng
+  };
 
   const closeModal = () => {
     setModalVisible(false);
@@ -121,17 +135,13 @@ export default ChatCard = () => {
   };
 
   const renderChatItem = ({ item }) => {
-    if (item.id === currentUser.id) {
-      // Nếu item.id trùng với currentUser.id thì không render item
-      return null;
-    }
+    const lastMessage = getLastMessage(item.id);
+    if (!lastMessage) return null;
 
-    const lastMessage = item.messages[item.messages.length - 1];
-    // Kiểm tra nếu người gửi là người dùng hiện tại
     const isCurrentUser = lastMessage.senderId === currentUser.id;
     const messageContent = isCurrentUser
-    ? `You: ${lastMessage.content}`
-    : lastMessage.content;
+      ? `You: ${lastMessage.content}`
+      : lastMessage.content;
 
     return (
       <TouchableOpacity
@@ -140,18 +150,46 @@ export default ChatCard = () => {
         <View style={styles.chatItem}>
           <Image source={{ uri: item.image }} style={styles.chatImage} />
           <View style={styles.chatDetails}>
-            <View style={styles.chatHeader}>
-              <Text style={styles.chatName}>{item.name}</Text>
-              <Text style={styles.chatTime}>
-                {getTimeAgo(lastMessage.sentAt)}
-              </Text>
-            </View>
+            <Text style={styles.chatName}>{item.name}</Text>
             <Text style={styles.chatDetail}>{messageContent}</Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
+
+  // const renderChatItem = ({ item }) => {
+  //   if (item.id === currentUser.id) {
+  //     // Nếu item.id trùng với currentUser.id thì không render item
+  //     return null;
+  //   }
+
+  //   const lastMessage = item.messages[item.messages.length - 1];
+  //   // Kiểm tra nếu người gửi là người dùng hiện tại
+  //   const isCurrentUser = lastMessage.senderId === currentUser.id;
+  //   const messageContent = isCurrentUser
+  //   ? `You: ${lastMessage.content}`
+  //   : lastMessage.content;
+
+  //   return (
+  //     <TouchableOpacity
+  //       onPress={() => navigation.navigate("ChatScreen", { item })}
+  //     >
+  //       <View style={styles.chatItem}>
+  //         <Image source={{ uri: item.image }} style={styles.chatImage} />
+  //         <View style={styles.chatDetails}>
+  //           <View style={styles.chatHeader}>
+  //             <Text style={styles.chatName}>{item.name}</Text>
+  //             <Text style={styles.chatTime}>
+  //               {getTimeAgo(lastMessage.sentAt)}
+  //             </Text>
+  //           </View>
+  //           <Text style={styles.chatDetail}>{messageContent}</Text>
+  //         </View>
+  //       </View>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
   return (
     <FlatList
