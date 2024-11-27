@@ -25,12 +25,9 @@ const ChatScreen = ({ route }) => {
   const [showMiniGameInvite, setShowMiniGameInvite] = useState(false);
   // Lưu trữ tin nhắn
   const [messageText, setMessageText] = useState("");
-  // const [messages, setMessages] = useState(item.messages || []);
-
   const [messagesData, setMessagesData] = useState([]);
 
   useEffect(() => {
-    // Tải dữ liệu tin nhắn từ MockAPI
     fetchMessages()
       .then((data) => {
         const filteredMessages = data.filter(
@@ -43,14 +40,6 @@ const ChatScreen = ({ route }) => {
       .catch((error) => console.error("Failed to fetch messages:", error));
   }, [currentUser.id, item.id]);
 
-  // const [allMessages, setAllMessages] = useState([]);
-  // useEffect(() => {
-  //   // Gộp và sắp xếp các tin nhắn theo thời gian từ item.messages
-  //   const mergedMessages = item.messages
-  //     .sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt)); // Sắp xếp theo thời gian
-  //   setAllMessages(mergedMessages);
-  // }, [item]); // Cập nhật khi item thay đổi
-
   const toggleMiniGameInvite = () => {
     setShowMiniGameInvite(!showMiniGameInvite);
   };
@@ -59,36 +48,14 @@ const ChatScreen = ({ route }) => {
     // Kiểm tra tin nhắn trống
     if (!messageText.trim()) return;
 
-    // Lấy id mới dựa trên ID lớn nhất trong messages
-    // const newId =
-    //   item.messages.length > 0
-    //     ? Math.max(...item.messages.map((msg) => msg.id)) + 1
-    //     : 1;
-
-    // const newMessage = {
-    //   id: newId,
-    //   content: messageText,
-    //   sentAt: new Date().toISOString(),
-    //   senderId: currentUser.id, // Id của người gửi
-    //   receiverId: item.id, // Id của người nhận
-    // };
-
     const newMessage = {
-      // id: messagesData.length + 1,
       content: messageText,
       sentAt: new Date().toISOString(),
       senderId: currentUser.id,
       receiverId: item.id,
     };
 
-    // // Cập nhật mảng messages của item
-    // const updatedItem = {
-    //   ...item,
-    //   messages: [...item.messages, newMessage], // Thêm tin nhắn mới vào mảng messages
-    // };
-
     try {
-      // Gửi yêu cầu PUT để cập nhật tin nhắn vào MockAPI
       const response = await fetch(
         `https://6742e26fb7464b1c2a62f2eb.mockapi.io/Message`,
         {
@@ -96,24 +63,11 @@ const ChatScreen = ({ route }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          // Gửi toàn bộ item đã cập nhật, bao gồm cả tin nhắn mới
-          // body: JSON.stringify(updatedItem),
           body: JSON.stringify(newMessage),
         }
       );
-
-      // if (response.ok) {
-      //   const data = await response.json();
-      //   console.log("Message sent successfully:", data);
-      //   // Cập nhật danh sách tin nhắn trong trạng thái
-      //   setMessages((prevMessages) => [...prevMessages, newMessage]);
-      //   setMessageText(""); // Xóa nội dung nhập
-      // } else {
-      //   console.error("Message sending failed:", response.statusText);
-      // }
       if (response.ok) {
         const savedMessage = await response.json();
-        // setMessagesData((prev) => [...prev, newMessage]);
         setMessagesData((prev) => [...prev, savedMessage]);
         setMessageText("");
       } else {
@@ -171,37 +125,7 @@ const ChatScreen = ({ route }) => {
           </View>
 
           {/* Message Container */}
-          {/* <ScrollView
-            style={styles.messageContainer}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            keyboardShouldPersistTaps="handled"
-          >
-            {messages.map((message) => {
-              // Kiểm tra xem tin nhắn là của người dùng hiện tại hay của item
-              const isSentByCurrentUser = message.senderId === currentUser.id;
-              const isReceivedByCurrentUser = message.senderId === item.id;
-
-              return (
-                <View
-                  key={message.id}
-                  style={
-                    isSentByCurrentUser ? styles.sentMessage : 
-                    isReceivedByCurrentUser ? styles.receivedMessage
-                    : null
-                  }
-                >
-                  <Text style={styles.messageText}>{message.content}</Text>
-                  <Text style={styles.timeText}>
-                    {new Date(message.sentAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-                </View>
-              );
-            })}
-          </ScrollView> */}
-            <ScrollView
+          <ScrollView
             style={styles.messageContainer}
             contentContainerStyle={{ paddingBottom: 20 }}
             keyboardShouldPersistTaps="handled"
@@ -210,7 +134,6 @@ const ChatScreen = ({ route }) => {
               const isSentByCurrentUser = message.senderId === currentUser.id;
               return (
                 <View
-                  // key={message.id}
                   key={`${message.id}-${message.sentAt}`}
                   style={
                     isSentByCurrentUser
@@ -218,8 +141,24 @@ const ChatScreen = ({ route }) => {
                       : styles.receivedMessage
                   }
                 >
-                  <Text style={styles.messageText}>{message.content}</Text>
-                  <Text style={styles.timeText}>
+                  <Text
+                    style={[
+                      styles.messageText,
+                      isSentByCurrentUser
+                        ? styles.sentText
+                        : styles.receivedText,
+                    ]}
+                  >
+                    {message.content}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.timeText,
+                      isSentByCurrentUser
+                        ? styles.sentText
+                        : styles.receivedText,
+                    ]}
+                  >
                     {new Date(message.sentAt).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -252,13 +191,15 @@ const ChatScreen = ({ route }) => {
             <TextInput
               placeholder="Type a message..."
               style={styles.input}
-              value={messageText} // Gắn giá trị tin nhắn
-              onChangeText={setMessageText} // Cập nhật khi người dùng nhập
+              // Gắn giá trị tin nhắn
+              value={messageText}
+              // Cập nhật khi người dùng nhập
+              onChangeText={setMessageText}
             />
             <TouchableOpacity>
               <Icon name="happy-outline" size={24} color="gray" />
             </TouchableOpacity>
-            {/* Gửi tin nhăn */}
+            {/* Gửi tin nhắn */}
             <TouchableOpacity onPress={sendMessage}>
               <Icon name="send" size={24} color="skyblue" />
             </TouchableOpacity>
@@ -341,12 +282,16 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   messageText: {
-    color: "white",
     fontSize: 16,
+  },
+  sentText: {
+    color: "white",
+  },
+  receivedText: {
+    color: "black",
   },
   timeText: {
     fontSize: 12,
-    color: "white",
     alignSelf: "flex-end",
     marginTop: 5,
   },

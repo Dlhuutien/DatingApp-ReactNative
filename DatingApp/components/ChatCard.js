@@ -40,57 +40,101 @@ export default ChatCard = () => {
         (msg.senderId === currentUser.id && msg.receiverId === userId) ||
         (msg.receiverId === currentUser.id && msg.senderId === userId)
     );
-    return userMessages[userMessages.length - 1]; // Tin nhắn cuối cùng
+    // Tin nhắn cuối cùng
+    return userMessages[userMessages.length - 1]; 
   };
 
   const closeModal = () => {
     setModalVisible(false);
   };
 
+  //   const filteredUsers = usersData.filter(
+  //     (item) => item.id !== currentUser.id
+  //   );
+
+  //   return (
+  //     <>
+  //       {/* Search Bar */}
+  //       <View style={styles.searchSection}>
+  //         <TextInput style={styles.searchText} placeholder="Search" />
+  //       </View>
+
+  //       {/* Matches Section */}
+  //       <TouchableOpacity onPress={() => navigation.navigate("ChatScreen")}>
+  //         <View style={styles.matchesSection}>
+  //           <Text style={styles.matchesTitle}>
+  //             Matches ({filteredUsers.length})
+  //           </Text>
+  //           <FlatList
+  //             data={filteredUsers} // Sử dụng danh sách đã lọc
+  //             horizontal
+  //             showsHorizontalScrollIndicator={false}
+  //             renderItem={({ item }) => (
+  //               <TouchableOpacity
+  //                 onPress={() => navigation.navigate("ChatScreen", { item })}
+  //               >
+  //                 <Image
+  //                   source={{ uri: item.image }}
+  //                   style={styles.matchProfile}
+  //                 />
+  //               </TouchableOpacity>
+  //             )}
+  //             keyExtractor={(item) => item.id.toString()}
+  //           />
+  //         </View>
+  //       </TouchableOpacity>
+
+  //       {/* Chat Title */}
+  //       <Text style={styles.chatTitle}>Chats</Text>
+  //     </>
+  //   );
+  // };
   const renderHeader = () => {
     // Lọc danh sách để loại bỏ người dùng hiện tại
-    const filteredUsers = usersData.filter(
-      (item) => item.id !== currentUser.id
+    const matchedUsers = usersData.filter(
+      (item) =>
+        item.id !== currentUser.id && currentUser.matches?.includes(item.id)
     );
-
+  
     return (
       <>
         {/* Search Bar */}
         <View style={styles.searchSection}>
           <TextInput style={styles.searchText} placeholder="Search" />
         </View>
-
+  
         {/* Matches Section */}
-        <TouchableOpacity onPress={() => navigation.navigate("ChatScreen")}>
-          <View style={styles.matchesSection}>
-            <Text style={styles.matchesTitle}>
-              Matches ({filteredUsers.length})
-            </Text>
-            <FlatList
-              data={filteredUsers} // Sử dụng danh sách đã lọc
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("ChatScreen", { item })}
-                >
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.matchProfile}
-                  />
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item) => item.id.toString()}
-            />
-          </View>
-        </TouchableOpacity>
-
+        <View style={styles.matchesSection}>
+          <Text style={styles.matchesTitle}>
+            Matches ({matchedUsers.length})
+          </Text>
+          <FlatList
+            // Sử dụng danh sách đã match
+            data={matchedUsers} 
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ChatScreen", { item })}
+              >
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.matchProfile}
+                />
+                {/* Hiển thị tên người match
+                <Text style={styles.matchName}>{item.name}</Text> */}
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.id.toString()}
+          />
+        </View>
+  
         {/* Chat Title */}
         <Text style={styles.chatTitle}>Chats</Text>
       </>
     );
   };
-
+  
   const getTimeAgo = (sentAt) => {
     const now = new Date();
     // Chuyển sentAt thành đối tượng Date
@@ -147,49 +191,21 @@ export default ChatCard = () => {
       <TouchableOpacity
         onPress={() => navigation.navigate("ChatScreen", { item })}
       >
-        <View style={styles.chatItem}>
-          <Image source={{ uri: item.image }} style={styles.chatImage} />
-          <View style={styles.chatDetails}>
-            <Text style={styles.chatName}>{item.name}</Text>
-            <Text style={styles.chatDetail}>{messageContent}</Text>
-          </View>
-        </View>
+         <View style={styles.chatItem}>
+           <Image source={{ uri: item.image }} style={styles.chatImage} />
+           <View style={styles.chatDetails}>
+             <View style={styles.chatHeader}>
+               <Text style={styles.chatName}>{item.name}</Text>
+               <Text style={styles.chatTime}>
+                 {getTimeAgo(lastMessage.sentAt)}
+               </Text>
+             </View>
+             <Text style={styles.chatDetail}>{messageContent}</Text>
+           </View>
+         </View>
       </TouchableOpacity>
     );
   };
-
-  // const renderChatItem = ({ item }) => {
-  //   if (item.id === currentUser.id) {
-  //     // Nếu item.id trùng với currentUser.id thì không render item
-  //     return null;
-  //   }
-
-  //   const lastMessage = item.messages[item.messages.length - 1];
-  //   // Kiểm tra nếu người gửi là người dùng hiện tại
-  //   const isCurrentUser = lastMessage.senderId === currentUser.id;
-  //   const messageContent = isCurrentUser
-  //   ? `You: ${lastMessage.content}`
-  //   : lastMessage.content;
-
-  //   return (
-  //     <TouchableOpacity
-  //       onPress={() => navigation.navigate("ChatScreen", { item })}
-  //     >
-  //       <View style={styles.chatItem}>
-  //         <Image source={{ uri: item.image }} style={styles.chatImage} />
-  //         <View style={styles.chatDetails}>
-  //           <View style={styles.chatHeader}>
-  //             <Text style={styles.chatName}>{item.name}</Text>
-  //             <Text style={styles.chatTime}>
-  //               {getTimeAgo(lastMessage.sentAt)}
-  //             </Text>
-  //           </View>
-  //           <Text style={styles.chatDetail}>{messageContent}</Text>
-  //         </View>
-  //       </View>
-  //     </TouchableOpacity>
-  //   );
-  // };
 
   return (
     <FlatList
@@ -268,7 +284,6 @@ const styles = StyleSheet.create({
   chatTime: {
     fontSize: 12,
     color: "#aaa",
-    // marginRight: 120,
     marginTop: 4,
   },
   chatDetail: {
