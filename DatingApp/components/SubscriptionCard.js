@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
@@ -30,7 +29,7 @@ export default SubscriptionCard = () => {
       {/* Profile Section */}
       <View style={styles.profileSection}>
         <Image
-          source={require("../assets/HuwTien.jpg")}
+          source={{uri: currentUser.image}}
           style={styles.profilePicture}
         />
         <View style={styles.profileInfo}>

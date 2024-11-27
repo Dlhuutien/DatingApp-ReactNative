@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,28 +9,111 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useSelector } from "react-redux";
+import { fetchUserData } from "../data/connectMockAPI";
+import axios from 'axios';
 
 export default UserCard = () => {
+  const [usersData, setUsersData] = useState([]);
+  const [currentUserIndex, setCurrentUserIndex] = useState(0);
+  // Tạo ref cho ScrollView
+  const scrollViewRef = useRef(null);
+
+  //Lấy DATA từ Redux
+  const currentUser = useSelector((state) => state.user.currentUser);
+
+  useEffect(() => {
+    fetchUserData()
+      .then((data) => {
+        const filteredData = data.filter(
+          (user) =>
+            //Lọc user hiện tại
+            user.id !== currentUser.id &&
+            //Lọc user chưa matches với user hiện tại
+            !user.matches.includes(currentUser.id)
+        );
+        setUsersData(filteredData);
+      })
+      .catch((error) => console.error("Failed to fetch users:", error));
+  }, [currentUser.id]);
+
+  // Hàm xử lý khi nhấn vào nút close
+  const handleClose = () => {
+    if (currentUserIndex < usersData.length - 1) {
+      // Chuyển sang người dùng tiếp theo
+      setCurrentUserIndex(currentUserIndex + 1);
+    } else {
+      // Quay lại người dùng đầu tiên khi hết danh sách
+      setCurrentUserIndex(0);
+    }
+    // Cuộn lại đầu trang
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  };
+
+  // Nếu không có dữ liệu người dùng, hiển thị thông báo
+  if (usersData.length === 0) {
+    return <Text>Loading...</Text>;
+  }
+
+  // Lấy người dùng matches hiện tại
+  const currentUserMatches = usersData[currentUserIndex];
+
+  const handleMatch = async () => {
+    try {
+      // Cập nhật danh sách matches của currentUser
+      const updatedCurrentUser = {
+        ...currentUser,
+        matches: [...currentUser.matches, currentUserMatches.id], 
+        // Thêm currentUserMatches.id vào matches của currentUser
+      };
+  
+      // Cập nhật danh sách matches của currentUserMatches
+      const updatedCurrentUserMatches = {
+        ...currentUserMatches,
+        matches: [...currentUserMatches.matches, currentUser.id], 
+      // Thêm currentUser.id vào matches của currentUserMatches
+      };
+  
+      // Gửi yêu cầu PUT để cập nhật currentUser
+      await axios.put(`https://6742e26fb7464b1c2a62f2eb.mockapi.io/User/${currentUser.id}`, updatedCurrentUser);
+  
+      // Gửi yêu cầu PUT để cập nhật currentUserMatches
+      await axios.put(`https://6742e26fb7464b1c2a62f2eb.mockapi.io/User/${currentUserMatches.id}`, updatedCurrentUserMatches);
+  
+      // Chuyển sang currentUserMatch tiếp theo
+      handleClose();
+    } catch (error) {
+      console.error("Error updating matches:", error);
+    }
+  };
+  
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} ref={scrollViewRef}>
       {/* Profile Image */}
       <ImageBackground
-        source={require("../assets/HuwTien.jpg")}
+        source={{ uri: currentUserMatches.image }}
         style={styles.profileImage}
         imageStyle={{ borderRadius: 10 }}
       >
         <View style={styles.userInfo}>
           <View style={{ flexDirection: "row" }}>
-            <Text style={styles.userName}>HuwTien, 21</Text>
+            <Text style={styles.userName}>
+              {currentUserMatches.name}, {currentUserMatches.age}
+            </Text>
             <Icon
               name="shield-checkmark"
               size={30}
-              style={{ color: "#0a92d6", marginTop: 6 }}
+              style={{ color: "#0a92d6" }}
             />
           </View>
-          <Text style={styles.userGender}>he/ his/ his</Text>
+          <Text style={styles.userGender}>
+            {currentUserMatches.profileDetails.gender}
+          </Text>
           <Text style={styles.userOccupation}>
-            Studying: software engineering
+            {currentUserMatches.profileDetails.occupation}
           </Text>
         </View>
       </ImageBackground>
@@ -40,16 +123,15 @@ export default UserCard = () => {
         <Icon name="location-outline" size={20} color="#F47C7C" />
         <Text style={styles.locationText}>2.0 kilometers away</Text>
       </View>
-      <Text style={styles.locationCity}>Go Vap, Ho Chi Minh city</Text>
+      <Text style={styles.locationCity}>
+        {currentUserMatches.profileDetails.location}
+      </Text>
 
       {/* About Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About me</Text>
+        <Text style={styles.sectionTitle}>About me {currentUser.id}</Text>
         <Text style={styles.sectionContent}>
-          It would be wonderful to meet someone who appreciates the arts and
-          enjoys exploring the vibrant culture of the city. I value
-          open-mindedness, good communication, and a shared passion for
-          classical music and fine arts. Also, mother of 2 cats ;)
+          {currentUserMatches.aboutMe || "This user has not added a bio."}
         </Text>
       </View>
 
@@ -57,12 +139,15 @@ export default UserCard = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>My details</Text>
         <View style={styles.detailsContainer}>
-          <Text style={styles.detail}>175 cm</Text>
-          <Text style={styles.detail}>Non-smoker</Text>
-          <Text style={styles.detail}>Cat lover</Text>
-          <Text style={styles.detail}>Master degree</Text>
-          <Text style={styles.detail}>Want two</Text>
-          <Text style={styles.detail}>Occasionally</Text>
+          <Text style={styles.detail}>
+            {currentUserMatches.profileDetails.height}
+          </Text>
+          <Text style={styles.detail}>
+            Zodiac: {currentUserMatches.profileDetails.zodiac}
+          </Text>
+          <Text style={styles.detail}>
+            Zeligion: {currentUserMatches.profileDetails.religion}
+          </Text>
         </View>
       </View>
 
@@ -99,10 +184,10 @@ export default UserCard = () => {
 
       {/* Action Buttons */}
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleClose}>
           <Icon name="close" size={30} color="#F47C7C" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleMatch}>
           <Icon name="checkmark" size={30} color="#4CAF50" />
         </TouchableOpacity>
       </View>
@@ -115,14 +200,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-
   profileImage: {
     height: 400,
     margin: 20,
     borderRadius: 10,
     justifyContent: "flex-end",
   },
-
   userInfo: {
     position: "absolute",
     bottom: 20,
