@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,13 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-
+import { UserProfileCompletion } from "./UserProfileCompletion";
 
 export default SubscriptionCard = () => {
   const [selectedTab, setSelectedTab] = useState("Plans");
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const profileCompletion = UserProfileCompletion();
 
   //Lấy DATA từ Redux
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -23,6 +24,7 @@ export default SubscriptionCard = () => {
   const handleEdit = () => {
     navigation.navigate("UserEditCard");
   };
+
 
   return (
     <ScrollView style={styles.container}>
@@ -40,7 +42,7 @@ export default SubscriptionCard = () => {
           >
             <Text style={styles.editProfileButtonText}>{t("Edit your profile")}</Text>
           </TouchableOpacity>
-          <Text style={styles.completionText}>45% complete</Text>
+          <Text style={styles.completionText}>{profileCompletion}% complete</Text>
         </View>
       </View>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,14 +17,14 @@ import { useDispatch } from "react-redux";
 // import usersData from "../data/usersData";
 import { updateProfileDetails } from "./redux/userSlice";
 import { updateUserProfile } from "../data/connectMockAPI";
-
+import { UserProfileCompletion } from "./UserProfileCompletion";
 import { useSelector } from "react-redux";
 
 export default ProfileEditCard = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
-  const [profileCompletion, setProfileCompletion] = useState(45);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const profileCompletion = UserProfileCompletion();
 
   // Add
   const [occupationModalVisible, setOccupationModalVisible] = useState(false);
@@ -76,6 +76,10 @@ export default ProfileEditCard = () => {
       // Cập nhật Redux state
       dispatch(updateProfileDetails(updatedProfileDetails));
       console.log("Update complete", value);
+
+      // Tính toán lại tiến độ hoàn thành profile
+      calculateProfileCompletion();
+
       // Đóng modal
       setModalVisible(false);
     } catch (error) {
@@ -191,7 +195,7 @@ export default ProfileEditCard = () => {
         [heightModalVisible, setHeightModalVisible, heights, setHeight, 'height'],
         [smokingModalVisible, setSmokingModalVisible, yesNoOptions, setSmoking, 'smoking'],
         [drinkingModalVisible, setDrinkingModalVisible, drinks, setDrinking, 'drinking'],
-        [petsModalVisible, setPetsModalVisible, pet, setPets, 'pet'],
+        [petsModalVisible, setPetsModalVisible, pet, setPets, 'pets'],
         [childrenModalVisible, setChildrenModalVisible, yesNoOptions, setChildren, 'children'],
         [zodiacModalVisible, setZodiacModalVisible, zodiacSigns, setZodiac, 'zodiac'],
         [religionModalVisible, setReligionModalVisible, religions, setReligion,'religion']

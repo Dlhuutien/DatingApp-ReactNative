@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Button } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
 import ProfileCard from "./ProfileCard";
 import SubscriptionCard from "./SubscriptionCard";
 import ChatCard from "./ChatCard";
+import { useSelector } from "react-redux";
+import { ProgressBar } from "react-native-paper";
+import { UserProfileCompletion } from "./UserProfileCompletion";
 
 const ProfileScreen = () => {
+  const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   // Mặc định hiển thị ProfileCard
   const [activeCard, setActiveCard] = useState("profile");
@@ -14,6 +18,8 @@ const ProfileScreen = () => {
 
   // State for showing the options menu
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+
+  const profileCompletion = UserProfileCompletion();
 
   const handlePersonPress = () => {
     setActiveCard("user");
@@ -59,9 +65,8 @@ const ProfileScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.progressBar}>
-        <View style={styles.progressIndicator} />
-      </View>
+      {/* Tiến độ hoàn thành */}
+      <ProgressBar progress={profileCompletion / 100} color="#00C4CC" style={styles.progressBar}/>
 
       {/* Hiển thị card */}
       <View style={styles.cardContainer}>
