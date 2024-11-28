@@ -52,18 +52,6 @@ const PhoneSignIn = () => {
   };
 
 
-  // const handlePhoneSignIn = () => {
-  //   console.log("Phone number entered: ", phoneNumber);
-  //   const user = userData.find((user) => user.phoneNumber === phoneNumber);
-
-  //   if (user) {
-  //     dispatch(setUser(user));
-  //     navigation.navigate("Profile");
-  //   } else {
-  //     alert("Phone number not found!");
-  //   }
-  // };
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -99,14 +87,14 @@ const PhoneSignIn = () => {
 
           <TextInput
             style={styles.input}
-            placeholder="Enter your phone number"
+            placeholder={t("Enter your phone number")}
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
           />
 
           <TouchableOpacity style={styles.button} onPress={handlePhoneSignIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={styles.buttonText}>{t("Sign In")}</Text>
           </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>

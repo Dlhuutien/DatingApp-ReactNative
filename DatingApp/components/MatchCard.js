@@ -13,10 +13,14 @@ import { useSelector } from "react-redux";
 import { fetchUserData } from "../data/connectMockAPI";
 import axios from "axios";
 import IconMaterial from "react-native-vector-icons/MaterialIcons";
+import { useTranslation } from "react-i18next";
+
 
 export default MatchCard = () => {
   const [usersData, setUsersData] = useState([]);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
+  const { t } = useTranslation();
+
   // Tạo ref cho ScrollView
   const scrollViewRef = useRef(null);
 
@@ -57,7 +61,7 @@ export default MatchCard = () => {
 
   // Nếu không có dữ liệu người dùng, hiển thị thông báo
   if (usersData.length === 0) {
-    return <Text>Loading...</Text>;
+    return <Text style={{alignItems:"center", justifyContent:"center", marginHorizontal:25, textAlign:"center"}}>{t("Be proactive in finding people who are compatible with you")}</Text>;
   }
 
   // Lấy người dùng matches hiện tại
@@ -127,26 +131,26 @@ export default MatchCard = () => {
       </ImageBackground>
 
       {/* Location */}
-      <View style={styles.locationContainer}>
+      {/* <View style={styles.locationContainer}>
         <Icon name="location-outline" size={20} color="#F47C7C" />
         <Text style={styles.locationText}>2.0 kilometers away</Text>
-      </View>
+      </View> */}
       <Text style={styles.locationCity}>
         {currentUserMatches.profileDetails.location}
       </Text>
 
       {/* About Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About me</Text>
+        <Text style={styles.sectionTitle}>{t("About me")}</Text>
         <Text style={styles.sectionContent}>
           {currentUserMatches.profileDetails.aboutMe ||
-            "This user has not added a bio."}
+            t("This user has not added a bio.")}
         </Text>
       </View>
 
       {/* Details Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>My details</Text>
+        <Text style={styles.sectionTitle}>{t("My details")}</Text>
         <View style={styles.detailsContainer}>
           {currentUserMatches.profileDetails.height && (
             <View style={styles.detail}>
@@ -214,7 +218,7 @@ export default MatchCard = () => {
 
       {/* Interest Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>I enjoy</Text>
+        <Text style={styles.sectionTitle}>{t("I enjoy")}</Text>
         <View style={styles.interestsContainer}>
           {currentUserMatches.profileDetails.enjoyments &&
             currentUserMatches.profileDetails.enjoyments.map(
@@ -229,7 +233,7 @@ export default MatchCard = () => {
 
       {/* Languages Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>I communicate in</Text>
+        <Text style={styles.sectionTitle}>{t("I communicate in")}</Text>
         <View style={styles.interestsContainer}>
           {currentUserMatches.profileDetails.communicates &&
             currentUserMatches.profileDetails.communicates.map(

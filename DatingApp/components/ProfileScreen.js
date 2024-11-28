@@ -9,10 +9,12 @@ import MatchCard from "./MatchCard";
 import { useSelector } from "react-redux";
 import { ProgressBar } from "react-native-paper";
 import { UserProfileCompletion } from "./UserProfileCompletion";
+import { useTranslation } from "react-i18next";
 
 const ProfileScreen = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
+  const { t } = useTranslation();
   // Mặc định hiển thị ProfileCard
   const [activeCard, setActiveCard] = useState("profile");
   const [activeIcon, setActiveIcon] = useState("heart");
@@ -118,15 +120,15 @@ const ProfileScreen = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Options</Text>
+            <Text style={styles.modalTitle}>{t("Options")}</Text>
             <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-              <Text style={styles.logoutButtonText}>Log out</Text>
+              <Text style={styles.logoutButtonText}>{t("Log out")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setIsOptionsVisible(false)}
               style={styles.closeButton}
             >
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>{t("Close")}</Text>
             </TouchableOpacity>
           </View>
         </View>

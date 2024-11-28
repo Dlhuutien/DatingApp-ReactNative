@@ -22,8 +22,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProfileDetails } from "./redux/userSlice";
 import { updateUserProfile } from "../data/connectMockAPI";
 import { UserProfileCompletion } from "./UserProfileCompletion";
+import { useTranslation } from "react-i18next";
 
 export default ProfileEditCard = () => {
+  const { t } = useTranslation();
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -217,13 +219,13 @@ export default ProfileEditCard = () => {
           <Icon name="arrow-back" size={25} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Edit profile</Text>
+        <Text style={styles.headerTitle}>{t("Edit profile")}</Text>
       </View>
 
       {/* Profile Completion */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          Profile completion: {profileCompletion}%
+          {t("Profile completion")}: {profileCompletion}%
         </Text>
         <ProgressBar
           progress={profileCompletion / 100}
@@ -234,9 +236,9 @@ export default ProfileEditCard = () => {
 
       {/* Photos Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Photos</Text>
+        <Text style={styles.sectionTitle}>{t("Photos")}</Text>
         <Text style={styles.subText}>
-          The main photo is how you appear to others on the swipe view.
+          {t("The main photo is how you appear to others on the swipe view.")}
         </Text>
         <View style={styles.photoGrid}>
           <Image
@@ -254,10 +256,10 @@ export default ProfileEditCard = () => {
 
       {/* About Me Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About me</Text>
+        <Text style={styles.sectionTitle}>{t("About me")}</Text>
         <TextInput
           style={styles.textArea}
-          placeholder="Share a few words about yourself, your interests, and what you're looking for in a connection..."
+          placeholder={t("ShareBioPlaceholder")}
           multiline
           // Liên kết với state
           value={aboutMe}  
@@ -268,7 +270,7 @@ export default ProfileEditCard = () => {
 
       {/* My Details Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>My details</Text>
+        <Text style={styles.sectionTitle}>{t("My details")}</Text>
         {[
           ["Occupation", occupationModalVisible, setOccupationModalVisible, occupation, setOccupation, occupations],
           ["Gender & Pronouns", genderModalVisible, setGenderModalVisible, gender, setGender, genders],
@@ -288,7 +290,7 @@ export default ProfileEditCard = () => {
 
       {/* Additional Details */}
       <View style={styles.section}>
-        <Text style={{ color: "#aaa" }}>Most people also want to know:</Text>
+        <Text style={{ color: "#aaa" }}>{t("Most people also want to know:")}</Text>
         {[
           ["Height", heightModalVisible, setHeightModalVisible, height, setHeight, heights],
           ["Smoking", smokingModalVisible, setSmokingModalVisible, smoking, setSmoking, yesNoOptions],
@@ -331,7 +333,7 @@ export default ProfileEditCard = () => {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Select {options[0]}</Text>
+              <Text style={styles.modalTitle}>{t("Select")} {options[0]}</Text>
               <FlatList
                 data={options}
                 renderItem={({ item }) => (
@@ -351,7 +353,7 @@ export default ProfileEditCard = () => {
                 style={styles.modalCloseButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Text style={styles.modalCloseText}>{t("Close")}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -360,12 +362,12 @@ export default ProfileEditCard = () => {
 
        {/* I Enjoy Section */}
        <View style={styles.section}>
-        <Text style={styles.sectionTitle}>I enjoy</Text>
+        <Text style={styles.sectionTitle}>{t("I enjoy")}</Text>
         <Text style={styles.subText}>
-          Adding your interests is a great way to find like-minded connections.
+        {t("IEnjoySubText")}
         </Text>
         <TouchableOpacity style={styles.addButton} onPress={() => setShowEnjoymentsModal(true)}>
-          <Text style={styles.addButtonText}>Add Enjoyment</Text>
+          <Text style={styles.addButtonText}>{t("Add Enjoyment")}</Text>
         </TouchableOpacity>
         <View style={styles.tags}>
           {enjoyments.map((item, index) => (
@@ -383,7 +385,7 @@ export default ProfileEditCard = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Enjoyment</Text>
+            <Text style={styles.modalTitle}>{t("Select Enjoyment")}</Text>
             <FlatList
               data={popularEnjoyments}
               renderItem={({ item }) => (
@@ -397,7 +399,7 @@ export default ProfileEditCard = () => {
               style={styles.modalCloseButton}
               onPress={() => setShowEnjoymentsModal(false)}
             >
-              <Text style={styles.modalCloseText}>Close</Text>
+              <Text style={styles.modalCloseText}>{t("Close")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -405,9 +407,9 @@ export default ProfileEditCard = () => {
 
       {/* Language Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>I communicate in</Text>
+        <Text style={styles.sectionTitle}>{t("I communicate in")}</Text>
         <TouchableOpacity style={styles.addButton} onPress={() => setShowCommunicatesModal(true)}>
-          <Text style={styles.addButtonText}>Add Language</Text>
+          <Text style={styles.addButtonText}>{t("Add Language")}</Text>
         </TouchableOpacity>
         <View style={styles.tags}>
           {communicates.map((item, index) => (
@@ -423,7 +425,7 @@ export default ProfileEditCard = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Language</Text>
+            <Text style={styles.modalTitle}>{t("Select Language")}</Text>
             <FlatList
               data={popularCommunicates}
               renderItem={({ item }) => (
@@ -437,7 +439,7 @@ export default ProfileEditCard = () => {
               style={styles.modalCloseButton}
               onPress={() => setShowCommunicatesModal(false)}
             >
-              <Text style={styles.modalCloseText}>Close</Text>
+              <Text style={styles.modalCloseText}>{t("Close")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -445,7 +447,7 @@ export default ProfileEditCard = () => {
 
       {/* Linked Accounts */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Linked accounts</Text>
+        <Text style={styles.sectionTitle}>{t("Linked accounts")}</Text>
         {["Instagram", "Facebook", "Twitter"].map((item, index) => (
           <View key={index}>
             <TouchableOpacity 

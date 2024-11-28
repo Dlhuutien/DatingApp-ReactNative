@@ -43,7 +43,7 @@ export default SignInScreen = () => {
         </View>
         <Text style={styles.title}>HeartSync</Text>
         <Text style={styles.subtitle}>
-          Where Hearts Connect, Love Finds Its Sync.
+          {t("Where Hearts Connect, Love Finds Its Sync.")}
         </Text>
       </View>
 
@@ -75,11 +75,11 @@ export default SignInScreen = () => {
 
       {/* Footer Text */}
       <Text style={styles.footerText}>
-        By signing up you agree to our{" "}
-        <Text style={styles.link}>Terms and Conditions</Text>
+        {t("By signing up you agree to our")}{" "}
+        <Text style={styles.link}>{t("Terms and Conditions")}</Text>
         {"\n"}
-        See how we use your data in our{" "}
-        <Text style={styles.link}>Privacy Policy</Text>.
+        {t("See how we use your data in our")}{" "}
+        <Text style={styles.link}>{t("Privacy Policy")}</Text>.
       </Text>
 
       <TouchableOpacity
@@ -88,7 +88,7 @@ export default SignInScreen = () => {
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Icon name="id-card-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Change Language</Text>
+          <Text style={styles.buttonText}>{t("Change Language")}</Text>
         </View>
       </TouchableOpacity>
 

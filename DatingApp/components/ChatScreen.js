@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { fetchMessages } from "../data/connectMockAPI";
+import { useTranslation } from "react-i18next";
 
 const ChatScreen = ({ route }) => {
   const { item } = route.params;
@@ -23,6 +24,7 @@ const ChatScreen = ({ route }) => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   const [showMiniGameInvite, setShowMiniGameInvite] = useState(false);
+  const { t } = useTranslation();
   // Lưu trữ tin nhắn
   const [messageText, setMessageText] = useState("");
   const [messagesData, setMessagesData] = useState([]);
@@ -37,7 +39,7 @@ const ChatScreen = ({ route }) => {
         );
         setMessagesData(filteredMessages);
       })
-      .catch((error) => console.error("Failed to fetch messages:", error));
+      .catch((error) => console.error(t("Failed to fetch messages:"), error));
   }, [currentUser.id, item.id]);
 
   const toggleMiniGameInvite = () => {
@@ -174,8 +176,7 @@ const ChatScreen = ({ route }) => {
             <TouchableOpacity style={styles.miniGameInvite}>
               <Icon name="bulb-outline" size={24} color="skyblue" />
               <Text style={styles.inviteText}>
-                Invite your match to play a mini-game. Break the ice and find
-                out if you both sync on a deeper level.
+              {t("InviteMatch")}
               </Text>
             </TouchableOpacity>
           )}
@@ -189,7 +190,7 @@ const ChatScreen = ({ route }) => {
               <Icon name="bulb-outline" size={24} color="skyblue" />
             </TouchableOpacity>
             <TextInput
-              placeholder="Type a message..."
+              placeholder={t("Type a message...")}
               style={styles.input}
               // Gắn giá trị tin nhắn
               value={messageText}

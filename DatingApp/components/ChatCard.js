@@ -12,8 +12,10 @@ import { useNavigation } from "@react-navigation/native";
 // import usersData from "../data/usersData";
 import { useSelector } from "react-redux";
 import { fetchUserData, fetchMessages } from "../data/connectMockAPI";
+import { useTranslation } from "react-i18next";
 
 export default ChatCard = () => {
+  const { t } = useTranslation();
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(true);
@@ -100,13 +102,13 @@ export default ChatCard = () => {
       <>
         {/* Search Bar */}
         <View style={styles.searchSection}>
-          <TextInput style={styles.searchText} placeholder="Search" />
+          <TextInput style={styles.searchText} placeholder={t("Search")} />
         </View>
   
         {/* Matches Section */}
         <View style={styles.matchesSection}>
           <Text style={styles.matchesTitle}>
-            Matches ({matchedUsers.length})
+            {t("Matches")} ({matchedUsers.length})
           </Text>
           <FlatList
             // Sử dụng danh sách đã match
@@ -130,7 +132,7 @@ export default ChatCard = () => {
         </View>
   
         {/* Chat Title */}
-        <Text style={styles.chatTitle}>Chats</Text>
+        <Text style={styles.chatTitle}>{t("Chats")}</Text>
       </>
     );
   };

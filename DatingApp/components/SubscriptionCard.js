@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -25,35 +25,37 @@ export default SubscriptionCard = () => {
     navigation.navigate("UserEditCard");
   };
 
-
   return (
     <ScrollView style={styles.container}>
       {/* Profile Section */}
       <View style={styles.profileSection}>
         <Image
-          source={{uri: currentUser.image}}
+          source={{ uri: currentUser.image }}
           style={styles.profilePicture}
         />
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>{currentUser.name}, 21</Text>
+          <Text style={styles.profileName}>
+            {currentUser.name}, {currentUser.age}
+          </Text>
           <TouchableOpacity
             style={styles.editProfileButton}
             onPress={handleEdit}
           >
-            <Text style={styles.editProfileButtonText}>{t("Edit your profile")}</Text>
+            <Text style={styles.editProfileButtonText}>
+              {t("Edit your profile")}
+            </Text>
           </TouchableOpacity>
-          <Text style={styles.completionText}>{profileCompletion}% complete</Text>
+          <Text style={styles.completionText}>
+            {profileCompletion}% {t("Complete")}
+          </Text>
         </View>
       </View>
 
       {/* Verification Section */}
       <View style={styles.verificationSection}>
-        <Text style={styles.verificationText}>
-          Verification adds an extra layer of authenticity and trust to your
-          profile.
-        </Text>
+        <Text style={styles.verificationText}>{t("VerificationPrompt")}</Text>
         <TouchableOpacity>
-          <Text style={styles.verifyLink}>Verify your account now!</Text>
+          <Text style={styles.verifyLink}>{t("VerifyNow")}</Text>
         </TouchableOpacity>
       </View>
 
@@ -96,48 +98,58 @@ export default SubscriptionCard = () => {
       {/* Premium Plan */}
       {selectedTab === "Plans" && (
         <View style={styles.premiumSection}>
-          <Text style={styles.premiumTitle}>HeartSync Premium</Text>
+          <Text style={styles.premiumTitle}>{t("PremiumTitle")}</Text>
           <Text style={styles.premiumDescription}>
-            Unlock exclusive features and supercharge your dating experience.
+            {t("PremiumDescription")}
           </Text>
           <TouchableOpacity style={styles.upgradeButton}>
-            <Text style={styles.upgradeButtonText}>Upgrade from $7.99</Text>
+            <Text style={styles.upgradeButtonText}>{t("UpgradePrice")}</Text>
           </TouchableOpacity>
 
           <View style={styles.featuresTable}>
             {/* Header Row */}
             <View style={styles.tableRow}>
               <Text style={[styles.tableHeader, { flex: 3 }]}>
-                What's included
+                {t("What's included")}
               </Text>
-              <Text style={[styles.tableHeader, { flex: 1 }]}>Free</Text>
-              <Text style={[styles.tableHeader, { flex: 1 }]}>Premium</Text>
+              <Text style={[styles.tableHeader, { flex: 1 }]}>{t("Free")}</Text>
+              <Text style={[styles.tableHeader, { flex: 1 }]}>
+                {t("Premium")}
+              </Text>
             </View>
 
             {/* Data Row 1 */}
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 3 }]}>Unlimited swipes</Text>
+              <Text style={[styles.tableCell, { flex: 3 }]}>
+                {t("Unlimited swipes")}
+              </Text>
               <Text style={styles.tableCell}>✔</Text>
               <Text style={styles.tableCell}>✔</Text>
             </View>
 
             {/* Data Row 2 */}
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 3 }]}>Advanced filters</Text>
+              <Text style={[styles.tableCell, { flex: 3 }]}>
+                {t("Advanced filters")}
+              </Text>
               <Text style={styles.tableCell}>✔</Text>
               <Text style={styles.tableCell}>✔</Text>
             </View>
 
             {/* Data Row 3 */}
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 3 }]}>Remove ads</Text>
+              <Text style={[styles.tableCell, { flex: 3 }]}>
+                {t("Remove ads")}
+              </Text>
               <Text style={styles.tableCell}>✘</Text>
               <Text style={styles.tableCell}>✔</Text>
             </View>
 
             {/* Data Row 4 */}
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 3 }]}>Undo accidental left swipes</Text>
+              <Text style={[styles.tableCell, { flex: 3 }]}>
+                {t("Undo accidental left swipes")}
+              </Text>
               <Text style={styles.tableCell}>✘</Text>
               <Text style={styles.tableCell}>✔</Text>
             </View>
@@ -145,7 +157,7 @@ export default SubscriptionCard = () => {
             {/* Data Row 5 */}
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 3 }]}>
-                Push your profile to more viewers
+                {t("Push your profile to more viewers")}
               </Text>
               <Text style={styles.tableCell}>✘</Text>
               <Text style={styles.tableCell}>✔</Text>

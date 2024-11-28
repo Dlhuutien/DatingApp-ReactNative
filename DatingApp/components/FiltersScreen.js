@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Switch, Button, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { useTranslation } from "react-i18next";
 
 export default function FiltersScreen() {
+  const { t } = useTranslation();
   const [preferredGender, setPreferredGender] = useState({
     male: false,
     female: true,
@@ -29,11 +31,11 @@ export default function FiltersScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>Filters</Text>
+        <Text style={styles.headerText}>{t("Filters")}</Text>
       </View>
 
       {/* Preferred Gender */}
-      <Text style={styles.sectionTitle}>What is your preferred gender?</Text>
+      <Text style={styles.sectionTitle}>{t("What is your preferred gender?")}</Text>
       <View style={styles.checkboxContainer}>
         {['Male', 'Female', 'Nonbinary'].map((gender) => (
           <TouchableOpacity
@@ -50,7 +52,7 @@ export default function FiltersScreen() {
       </View>
 
       {/* Age Range */}
-      <Text style={styles.sectionTitle}>Age range:</Text>
+      <Text style={styles.sectionTitle}>{t("Age range")}:</Text>
       <Slider
         style={styles.slider}
         minimumValue={18}
@@ -64,7 +66,7 @@ export default function FiltersScreen() {
       <Text style={styles.ageRangeText}>{`${ageRange[0]} - ${ageRange[1]}`}</Text>
 
       {/* Distance */}
-      <Text style={styles.sectionTitle}>Distance:</Text>
+      <Text style={styles.sectionTitle}>{t("Distance")}:</Text>
       <Slider
         style={styles.slider}
         minimumValue={10}
@@ -77,7 +79,7 @@ export default function FiltersScreen() {
       />
       <Text style={styles.distanceText}>{`${distance} km`}</Text>
       <View style={styles.switchContainer}>
-        <Text>Show profiles within a 15-km range when run out of matches.</Text>
+        <Text style={{fontSize:12}}>{t("ShowProfilesRange")}</Text>
         <Switch
           value={showExtendedDistance}
           onValueChange={setShowExtendedDistance}
@@ -86,7 +88,7 @@ export default function FiltersScreen() {
       </View>
 
       {/* Languages */}
-      <Text style={styles.sectionTitle}>Languages:</Text>
+      <Text style={styles.sectionTitle}>{t("Languages")}:</Text>
       <View style={styles.languageContainer}>
         {languages.map((language) => (
           <TouchableOpacity key={language} style={styles.languageTag}>
@@ -97,8 +99,8 @@ export default function FiltersScreen() {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <Button title="Clear all" color="#E0E0E0" onPress={() => {/* Clear filters logic */}} />
-        <Button title="Apply filters" color="#00CFFF" onPress={handleApplyFilters} />
+        <Button title={t("Clear all")} color="#E0E0E0" onPress={() => {/* Clear filters logic */}} />
+        <Button title={t("Apply filters")} color="#00CFFF" onPress={handleApplyFilters} />
       </View>
     </View>
   );
