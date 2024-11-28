@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import {
   View,
   Text,
@@ -9,6 +9,10 @@ import {
   ScrollView,
   Modal,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { ProgressBar } from "react-native-paper";
@@ -25,7 +29,6 @@ export default ProfileEditCard = () => {
   const dispatch = useDispatch();
   const profileCompletion = UserProfileCompletion();
 
-  // Add
   const [occupationModalVisible, setOccupationModalVisible] = useState(false);
   const [genderModalVisible, setGenderModalVisible] = useState(false);
   const [educationModalVisible, setEducationModalVisible] = useState(false);
@@ -38,7 +41,7 @@ export default ProfileEditCard = () => {
   const [zodiacModalVisible, setZodiacModalVisible] = useState(false);
   const [religionModalVisible, setReligionModalVisible] = useState(false);
 
-  // Data for modals
+  // Dữ liệu trong modal
   const occupations = ["Student", "Engineer", "Teacher", "Doctor", "Designer", "Other"];
   const genders = ["Male", "Female", "Other"];
   const educations = ["High School", "Bachelor", "Master", "PhD", "Other"];
@@ -49,7 +52,9 @@ export default ProfileEditCard = () => {
   const religions = ["None", "Christianity", "Buddhism", "Hinduism", "Islam", "Judaism", "Other"];
   const drinks = ["No", "Occasionally", "Socially", "Frequently"];
   const pet = ["No", "Dog", "Cat", "Bird", "Fish", "Other"];
+  const child = ["Don't want", "Want one", "Want two"];
 
+  //Lấy data từ MockAPI
   const [occupation, setOccupation] = useState(currentUser.profileDetails.occupation || "Add");
   const [gender, setGender] = useState(currentUser.profileDetails.gender || "Add");
   const [education, setEducation] = useState(currentUser.profileDetails.education || "Add");
@@ -106,22 +111,19 @@ export default ProfileEditCard = () => {
 
   const handleAddEnjoyment = (enjoyment) => {
     if (!enjoyments.includes(enjoyment)) {
-      setEnjoyments([...enjoyments, enjoyment]);
+      const updatedEnjoyments = [...enjoyments, enjoyment];
+      setEnjoyments(updatedEnjoyments);
+      handleSaveProfile("enjoyments", updatedEnjoyments); 
     }
     setShowEnjoymentsModal(false); 
   };
-  useEffect(() => {
-    if (enjoyments.length > 0 || communte.length > 0) {
-      // Gọi khi enjoyments hoặc communte thay đổi
-      handleSaveProfile("enjoyments", enjoyments); 
-      handleSaveProfile("communicates", communicates);
-    }
-  // Khi enjoyments hoặc communte thay đổi, sẽ gọi handleSaveProfile
-  }, [enjoyments, communicates]);
   
   const handleAddCommunicate = (communicate) => {
     if (!communicates.includes(communicate)) {
       setCommunicates([...communicates, communicate]);
+      const updatedCommunicates = [...communicates, communicate];
+      setEnjoyments(updatedCommunicates);
+      handleSaveProfile("communicates", updatedCommunicates); 
     }
     setShowCommunicatesModal(false);
   };
@@ -162,10 +164,49 @@ export default ProfileEditCard = () => {
       console.log("Error saving profile:", error);
     }
   };
+
+
+  const [activeItem, setActiveItem] = useState(null); // Quản lý mục đang được nhấn
+  const [inputValue, setInputValue] = useState(''); // Quản lý giá trị nhập vào
+  const linkedAccounts = {
+    Instagram: currentUser.profileDetails.instagram || "",
+    Facebook: currentUser.profileDetails.facebook || "",
+    Twitter: currentUser.profileDetails.twitter || ""
+  };
+
+
+  const handlePress = (item) => {
+    // Chuyển trạng thái khi người dùng nhấn vào một mục
+    setActiveItem(item === activeItem ? null : item);
+    setInputValue(linkedAccounts[item] || "");
+  };
+
+  const handleInputChange = (text) => {
+    setInputValue(text);
+    saveToMockAPILink(activeItem, text); // Lưu vào MockAPI mỗi lần thay đổi
+  };
+  const saveToMockAPILink = async (platform, link) => {
+    try {
+      const updatedUser = await updateUserProfile(currentUser.id, {
+        ...currentUser.profileDetails,
+        [platform.toLowerCase()]: link, // Cập nhật dữ liệu cho từng nền tảng
+      });
+
+      dispatch(updateProfileDetails({
+        [platform.toLowerCase()]: link
+      }));
+
+      console.log(`Updated ${platform} link:`, updatedUser);
+    } catch (error) {
+      console.log("Error saving profile:", error);
+    }
+  };
   
 
   return (
-    <ScrollView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <ScrollView>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -199,7 +240,7 @@ export default ProfileEditCard = () => {
         </Text>
         <View style={styles.photoGrid}>
           <Image
-            source={require("../assets/HuwTien.jpg")}
+            source={{uri: currentUser.image}}
             style={styles.photo}
           />
           <TouchableOpacity style={styles.photoPlaceholder}>
@@ -253,7 +294,7 @@ export default ProfileEditCard = () => {
           ["Smoking", smokingModalVisible, setSmokingModalVisible, smoking, setSmoking, yesNoOptions],
           ["Drinking", drinkingModalVisible, setDrinkingModalVisible, drinking, setDrinking, drinks],
           ["Pets", petsModalVisible, setPetsModalVisible, pets, setPets, pet],
-          ["Children", childrenModalVisible, setChildrenModalVisible, children, setChildren, yesNoOptions],
+          ["Children", childrenModalVisible, setChildrenModalVisible, children, setChildren, child],
           ["Zodiac sign", zodiacModalVisible, setZodiacModalVisible, zodiac, setZodiac, zodiacSigns],
           ["Religion", religionModalVisible, setReligionModalVisible, religion, setReligion, religions]
         ].map(([label, modalVisible, setModalVisible, value, setValue, options], index) => (
@@ -277,7 +318,7 @@ export default ProfileEditCard = () => {
         [smokingModalVisible, setSmokingModalVisible, yesNoOptions, setSmoking, 'smoking'],
         [drinkingModalVisible, setDrinkingModalVisible, drinks, setDrinking, 'drinking'],
         [petsModalVisible, setPetsModalVisible, pet, setPets, 'pets'],
-        [childrenModalVisible, setChildrenModalVisible, yesNoOptions, setChildren, 'children'],
+        [childrenModalVisible, setChildrenModalVisible, child, setChildren, 'children'],
         [zodiacModalVisible, setZodiacModalVisible, zodiacSigns, setZodiac, 'zodiac'],
         [religionModalVisible, setReligionModalVisible, religions, setReligion,'religion']
       ].map(([modalVisible, setModalVisible, options, setValue, field], index) => (
@@ -346,9 +387,7 @@ export default ProfileEditCard = () => {
             <FlatList
               data={popularEnjoyments}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.optionItem} onPress={() => {
-                  handleAddEnjoyment(item);
-                  handleSaveProfile("enjoyments", enjoyments);}}>
+                <TouchableOpacity style={styles.optionItem} onPress={() =>handleAddEnjoyment(item)}>
                   <Text style={styles.optionText}>{item}</Text>
                 </TouchableOpacity>
               )}
@@ -388,9 +427,7 @@ export default ProfileEditCard = () => {
             <FlatList
               data={popularCommunicates}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.optionItem} onPress={() =>{ 
-                  handleAddCommunicate(item),
-                  handleSaveProfile("communicates", communicates)}}>
+                <TouchableOpacity style={styles.optionItem} onPress={() => handleAddCommunicate(item)}>
                   <Text style={styles.optionText}>{item}</Text>
                 </TouchableOpacity>
               )}
@@ -410,13 +447,32 @@ export default ProfileEditCard = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Linked accounts</Text>
         {["Instagram", "Facebook", "Twitter"].map((item, index) => (
-          <TouchableOpacity key={index} style={styles.detailRow}>
-            <Text style={styles.detailText}>{item}</Text>
-            <Text style={styles.detailAction}>Add</Text>
-          </TouchableOpacity>
+          <View key={index}>
+            <TouchableOpacity 
+              style={styles.detailRow} 
+              onPress={() => handlePress(item)}
+            >
+              <Text style={styles.detailText}>{item}</Text>
+              <Text style={styles.detailAction}>
+              {activeItem === item && inputValue !== "" ? inputValue : linkedAccounts[item] || "Add"}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Hiển thị TextInput khi nhấn vào mục */}
+            {activeItem === item && (
+              <TextInput 
+                style={styles.textInput}
+                value={inputValue}
+                onChangeText={handleInputChange}
+                placeholder={`Enter ${item} link`}
+              />
+            )}
+          </View>
         ))}
       </View>
     </ScrollView>
+    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -498,6 +554,13 @@ const styles = StyleSheet.create({
   detailAction: {
     fontSize: 16,
     color: "#00C4CC",
+  },
+  textInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginTop: 10,
+    paddingLeft: 10,
   },
   tags: {
     flexDirection: "row",

@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import ProfileCard from "./ProfileCard";
 import SubscriptionCard from "./SubscriptionCard";
 import ChatCard from "./ChatCard";
+import MatchCard from "./MatchCard";
 import { useSelector } from "react-redux";
 import { ProgressBar } from "react-native-paper";
 import { UserProfileCompletion } from "./UserProfileCompletion";
@@ -72,6 +73,7 @@ const ProfileScreen = () => {
       <View style={styles.cardContainer}>
         {activeCard === 'user' && <SubscriptionCard />}
         {activeCard === 'profile' && <ProfileCard />}
+        {activeCard === 'match' && <MatchCard />}
         {activeCard === 'chat' && <ChatCard />}
       </View>
 

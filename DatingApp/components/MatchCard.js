@@ -14,7 +14,7 @@ import { fetchUserData } from "../data/connectMockAPI";
 import axios from "axios";
 import IconMaterial from "react-native-vector-icons/MaterialIcons";
 
-export default UserCard = () => {
+export default MatchCard = () => {
   const [usersData, setUsersData] = useState([]);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
   // Tạo ref cho ScrollView
@@ -30,10 +30,10 @@ export default UserCard = () => {
           (user) =>
             // Loại user hiện tại
             user.id !== currentUser.id &&
-            // Loại user đã matchWait với currentUser
-            !currentUser.matchWait.includes(user.id) && 
-            // Loại user đã match với currentUser
-            !currentUser.matches.includes(user.id) 
+            // Loại user đã matches với user hiện tại
+            !currentUser.matches.includes(user.id) &&
+            // Kiểm tra user có matchWait chứa id của user hiện tại
+            user.matchWait.includes(currentUser.id)
         );
         setUsersData(filteredData);
       })
@@ -60,16 +60,23 @@ export default UserCard = () => {
     return <Text>Loading...</Text>;
   }
 
-  // Lấy người dùng matchWait hiện tại
-  const currentUserMatchWait = usersData[currentUserIndex];
+  // Lấy người dùng matches hiện tại
+  const currentUserMatches = usersData[currentUserIndex];
 
   const handleMatch = async () => {
     try {
-      // Cập nhật danh sách matchWait của currentUser
+      // Cập nhật danh sách matches của currentUser
       const updatedCurrentUser = {
         ...currentUser,
-        matchWait: [...currentUser.matchWait, currentUserMatchWait.id],
-        // Thêm currentUserMatchWait.id vào matchWait của currentUser
+        matches: [...currentUser.matches, currentUserMatches.id],
+        // Thêm currentUserMatches.id vào matches của currentUser
+      };
+
+      // Cập nhật danh sách matches của currentUserMatches
+      const updatedCurrentUserMatches = {
+        ...currentUserMatches,
+        matches: [...currentUserMatches.matches, currentUser.id],
+        // Thêm currentUser.id vào matches của currentUserMatches
       };
 
       // Gửi yêu cầu PUT để cập nhật currentUser
@@ -78,10 +85,16 @@ export default UserCard = () => {
         updatedCurrentUser
       );
 
+      // Gửi yêu cầu PUT để cập nhật currentUserMatches
+      await axios.put(
+        `https://6742e26fb7464b1c2a62f2eb.mockapi.io/User/${currentUserMatches.id}`,
+        updatedCurrentUserMatches
+      );
+
       // Chuyển sang currentUserMatch tiếp theo
       handleClose();
     } catch (error) {
-      console.error("Error updating matchWait:", error);
+      console.error("Error updating matches:", error);
     }
   };
 
@@ -89,14 +102,14 @@ export default UserCard = () => {
     <ScrollView style={styles.container} ref={scrollViewRef}>
       {/* Profile Image */}
       <ImageBackground
-        source={{ uri: currentUserMatchWait.image }}
+        source={{ uri: currentUserMatches.image }}
         style={styles.profileImage}
         imageStyle={{ borderRadius: 10 }}
       >
         <View style={styles.userInfo}>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.userName}>
-              {currentUserMatchWait.name}, {currentUserMatchWait.age}
+              {currentUserMatches.name}, {currentUserMatches.age}
             </Text>
             <Icon
               name="shield-checkmark"
@@ -105,10 +118,10 @@ export default UserCard = () => {
             />
           </View>
           <Text style={styles.userGender}>
-            {currentUserMatchWait.profileDetails.gender}
+            {currentUserMatches.profileDetails.gender}
           </Text>
           <Text style={styles.userOccupation}>
-            {currentUserMatchWait.profileDetails.occupation}
+            {currentUserMatches.profileDetails.occupation}
           </Text>
         </View>
       </ImageBackground>
@@ -119,14 +132,14 @@ export default UserCard = () => {
         <Text style={styles.locationText}>2.0 kilometers away</Text>
       </View>
       <Text style={styles.locationCity}>
-        {currentUserMatchWait.profileDetails.location}
+        {currentUserMatches.profileDetails.location}
       </Text>
 
       {/* About Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About me</Text>
         <Text style={styles.sectionContent}>
-          {currentUserMatchWait.profileDetails.aboutMe ||
+          {currentUserMatches.profileDetails.aboutMe ||
             "This user has not added a bio."}
         </Text>
       </View>
@@ -135,65 +148,65 @@ export default UserCard = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>My details</Text>
         <View style={styles.detailsContainer}>
-          {currentUserMatchWait.profileDetails.height && (
+          {currentUserMatches.profileDetails.height && (
             <View style={styles.detail}>
               <IconMaterial name="straighten" size={25} />
-              <Text>{currentUserMatchWait.profileDetails.height}</Text>
+              <Text>{currentUserMatches.profileDetails.height}</Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.education && (
+          {currentUserMatches.profileDetails.education && (
             <View style={styles.detail}>
               <IconMaterial name="school" size={25} />
-              <Text>{currentUserMatchWait.profileDetails.education}</Text>
+              <Text>{currentUserMatches.profileDetails.education}</Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.zodiac && (
+          {currentUserMatches.profileDetails.zodiac && (
             <View style={styles.detail}>
               <Icon name="sparkles-outline" size={25} />
-              <Text>Zodiac: {currentUserMatchWait.profileDetails.zodiac}</Text>
+              <Text>Zodiac: {currentUserMatches.profileDetails.zodiac}</Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.religion && (
+          {currentUserMatches.profileDetails.religion && (
             <View style={styles.detail}>
               <IconMaterial name="church" size={25} />
               <Text>
-                Religion: {currentUserMatchWait.profileDetails.religion}
+                Religion: {currentUserMatches.profileDetails.religion}
               </Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.smoking && (
+          {currentUserMatches.profileDetails.smoking && (
             <View style={styles.detail}>
               <IconMaterial
                 name="smoking-rooms"
                 size={25}
                 style={{ marginBottom: 5 }}
               />
-              <Text>{currentUserMatchWait.profileDetails.smoking}</Text>
+              <Text>{currentUserMatches.profileDetails.smoking}</Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.pets && (
+          {currentUserMatches.profileDetails.pets && (
             <View style={styles.detail}>
               <Icon name="paw-outline" size={20} />
-              <Text>{currentUserMatchWait.profileDetails.pets} lover</Text>
+              <Text>{currentUserMatches.profileDetails.pets} lover</Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.children && (
+          {currentUserMatches.profileDetails.children && (
             <View style={styles.detail}>
               <IconMaterial name="child-friendly" size={25} />
-              <Text>{currentUserMatchWait.profileDetails.children}</Text>
+              <Text>{currentUserMatches.profileDetails.children}</Text>
             </View>
           )}
 
-          {currentUserMatchWait.profileDetails.drinking && (
+          {currentUserMatches.profileDetails.drinking && (
             <View style={styles.detail}>
               <IconMaterial name="local-drink" size={25} />
-              <Text>{currentUserMatchWait.profileDetails.drinking}</Text>
+              <Text>{currentUserMatches.profileDetails.drinking}</Text>
             </View>
           )}
         </View>
@@ -203,8 +216,8 @@ export default UserCard = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>I enjoy</Text>
         <View style={styles.interestsContainer}>
-          {currentUserMatchWait.profileDetails.enjoyments &&
-            currentUserMatchWait.profileDetails.enjoyments.map(
+          {currentUserMatches.profileDetails.enjoyments &&
+            currentUserMatches.profileDetails.enjoyments.map(
               (enjoyment, index) => (
                 <Text key={index} style={styles.interest}>
                   {enjoyment}
@@ -218,8 +231,8 @@ export default UserCard = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>I communicate in</Text>
         <View style={styles.interestsContainer}>
-          {currentUserMatchWait.profileDetails.communicates &&
-            currentUserMatchWait.profileDetails.communicates.map(
+          {currentUserMatches.profileDetails.communicates &&
+            currentUserMatches.profileDetails.communicates.map(
               (communicate, index) => (
                 <Text key={index} style={styles.interest}>
                   {communicate}
@@ -231,9 +244,9 @@ export default UserCard = () => {
 
       {/* Photos Section */}
       <View style={styles.photosContainer}>
-        <Image source={{uri : currentUserMatchWait.image}} style={styles.photo} />
-        <Image source={{uri : currentUserMatchWait.image}} style={styles.photo} />
-        <Image source={{uri : currentUserMatchWait.image}} style={styles.photo} />
+        <Image source={{uri : currentUserMatches.image}} style={styles.photo} />
+        <Image source={{uri : currentUserMatches.image}} style={styles.photo} />
+        <Image source={{uri : currentUserMatches.image}} style={styles.photo} />
       </View>
 
       {/* Action Buttons */}
@@ -256,8 +269,8 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     height: 400,
-    width: 350,
     margin: 20,
+    width: 350,
     borderRadius: 10,
     justifyContent: "flex-end",
   },
