@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -90,26 +90,79 @@ export default ProfileEditCard = () => {
   const [enjoyments, setEnjoyments] = useState(currentUser.profileDetails.enjoyments || []);
   const [showEnjoymentsModal, setShowEnjoymentsModal] = useState(false);
 
+  const [communicates, setCommunicates] = useState(currentUser.profileDetails.communicates || []);
+  const [showCommunicatesModal, setShowCommunicatesModal] = useState(false);
+
   // List of popular enjoyments (You can customize this list)
   const popularEnjoyments = [
     "Sci-fi movies", "Coffee brewing", "Trekking", "Cooking", "Gaming", "Reading",
     "Traveling", "Photography", "Music", "Sports"
   ];
+  const popularCommunicates = [
+    "English", "Vietnamese", "Chinese", "Japanese", "Korean", "Spanish", "French", 
+    "German", "Russian", "Hindi", "Arabic"
+  ];
+  
 
-   const handleAddEnjoyment = (enjoyment) => {
+  const handleAddEnjoyment = (enjoyment) => {
     if (!enjoyments.includes(enjoyment)) {
       setEnjoyments([...enjoyments, enjoyment]);
     }
     setShowEnjoymentsModal(false); 
   };
-
-  // Handle saving the updated profile
-  const handleSaveProfile = () => {
-    // Save the updated enjoyments to Redux or backend
-    dispatch(updateProfileDetails({ enjoyments }));
-    console.log("Updated Enjoyments:", enjoyments);
+  useEffect(() => {
+    if (enjoyments.length > 0 || communte.length > 0) {
+      // Gọi khi enjoyments hoặc communte thay đổi
+      handleSaveProfile("enjoyments", enjoyments); 
+      handleSaveProfile("communicates", communicates);
+    }
+  // Khi enjoyments hoặc communte thay đổi, sẽ gọi handleSaveProfile
+  }, [enjoyments, communicates]);
+  
+  const handleAddCommunicate = (communicate) => {
+    if (!communicates.includes(communicate)) {
+      setCommunicates([...communicates, communicate]);
+    }
+    setShowCommunicatesModal(false);
   };
 
+  const handleSaveProfile = async (fieldName, fieldValue) => {
+    try {
+      // Cập nhật MockAPI
+      await updateUserProfile(currentUser.id, {
+        ...currentUser.profileDetails,
+        [fieldName]: fieldValue,
+      });
+  
+      // Cập nhật Redux state
+      // Cập nhật Redux state với fieldName và fieldValue
+      dispatch(updateProfileDetails({ [fieldName]: fieldValue }));
+      console.log(`${fieldName} updated successfully:`, fieldValue);
+    } catch (error) {
+      console.error(`Error updating ${fieldName}:`, error);
+    }
+  };
+
+  // State để lưu nội dung nhập vào
+  const [aboutMe, setAboutMe] = useState(currentUser.profileDetails.aboutMe || ""); 
+  const handleAboutMeChange = (text) => {
+    setAboutMe(text);  // Cập nhật nội dung khi người dùng gõ
+    saveToMockAPI(text);  // Lưu vào MockAPI mỗi lần thay đổi
+  };
+
+  const saveToMockAPI = async (aboutMeText) => {
+    try {
+      const updatedUser = await updateUserProfile(currentUser.id,{
+        ...currentUser.profileDetails,
+        aboutMe: aboutMeText,
+      });
+      dispatch(updateProfileDetails({  aboutMe: aboutMeText }));
+      console.log("Updated user profile:", updatedUser);
+    } catch (error) {
+      console.log("Error saving profile:", error);
+    }
+  };
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -165,6 +218,10 @@ export default ProfileEditCard = () => {
           style={styles.textArea}
           placeholder="Share a few words about yourself, your interests, and what you're looking for in a connection..."
           multiline
+          // Liên kết với state
+          value={aboutMe}  
+          // Gọi hàm mỗi khi người dùng gõ
+          onChangeText={handleAboutMeChange}  
         />
       </View>
 
@@ -266,18 +323,14 @@ export default ProfileEditCard = () => {
         <Text style={styles.subText}>
           Adding your interests is a great way to find like-minded connections.
         </Text>
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowEnjoymentsModal(true)}>
+          <Text style={styles.addButtonText}>Add Enjoyment</Text>
+        </TouchableOpacity>
         <View style={styles.tags}>
           {enjoyments.map((item, index) => (
             <Text key={index} style={styles.tag}>{item}</Text>
           ))}
         </View>
-
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setShowEnjoymentsModal(true)}
-        >
-          <Text style={styles.addButtonText}>Add Enjoyment</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Modal for selecting enjoyment */}
@@ -293,10 +346,9 @@ export default ProfileEditCard = () => {
             <FlatList
               data={popularEnjoyments}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.optionItem}
-                  onPress={() => handleAddEnjoyment(item)}
-                >
+                <TouchableOpacity style={styles.optionItem} onPress={() => {
+                  handleAddEnjoyment(item);
+                  handleSaveProfile("enjoyments", enjoyments);}}>
                   <Text style={styles.optionText}>{item}</Text>
                 </TouchableOpacity>
               )}
@@ -311,19 +363,48 @@ export default ProfileEditCard = () => {
           </View>
         </View>
       </Modal>
-      {/* Save Button */}
-      <TouchableOpacity style={styles.saveButton} onPress={handleSaveProfile}>
-        <Text style={styles.saveButtonText}>Save Profile</Text>
-      </TouchableOpacity>
 
       {/* Language Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>I communicate in</Text>
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowCommunicatesModal(true)}>
+          <Text style={styles.addButtonText}>Add Language</Text>
+        </TouchableOpacity>
         <View style={styles.tags}>
-          <Text style={styles.tag}>English</Text>
-          <Text style={styles.tag}>Finnish</Text>
+          {communicates.map((item, index) => (
+            <Text key={index} style={styles.tag}>{item}</Text>
+          ))}
         </View>
       </View>
+      <Modal
+        visible={showCommunicatesModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowCommunicatesModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Language</Text>
+            <FlatList
+              data={popularCommunicates}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.optionItem} onPress={() =>{ 
+                  handleAddCommunicate(item),
+                  handleSaveProfile("communicates", communicates)}}>
+                  <Text style={styles.optionText}>{item}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item}
+            />
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setShowCommunicatesModal(false)}
+            >
+              <Text style={styles.modalCloseText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Linked Accounts */}
       <View style={styles.section}>
@@ -457,34 +538,22 @@ const styles = StyleSheet.create({
   modalCloseButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#00C4CC",
     borderRadius: 5,
   },
   modalCloseText: {
     color: "#fff",
     textAlign: "center",
   },
-
-
+  //Button
   addButton: {
     backgroundColor: "#00C4CC",
     padding: 10,
     borderRadius: 5,
-    marginTop: 15,
+    marginTop: 10,
     alignItems: "center",
   },
   addButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  saveButton: {
-    backgroundColor: "#007AFF",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-    alignItems: "center",
-  },
-  saveButtonText: {
     color: "#fff",
     fontSize: 16,
   },
