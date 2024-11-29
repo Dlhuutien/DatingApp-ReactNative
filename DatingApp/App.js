@@ -8,12 +8,13 @@ import 'intl-pluralrules';
 import i18n from "./components/i18n";
 import SettingsScreen from "./components/SettingsScreen";
 // Screens
-import SignInScreen from "./components/SignInScreen";
 import PhoneSignIn from "./components/PhoneSignIn";
+import SignUp from "./components/SignUp";
+import SignInScreen from "./components/SignInScreen";
 import ProfileScreen from "./components/ProfileScreen";
-import UserEditCard from "./components/UserEditCard";
 import ChatScreen from "./components/ChatScreen";
 import FiltersScreen from "./components/FiltersScreen";
+import UserEditCard from "./components/UserEditCard";
 // Redux Toolkit
 import { Provider } from "react-redux";
 import store from "./components/redux/store";
@@ -38,6 +39,12 @@ const App = () => {
             component={PhoneSignIn}
             // options={{ headerShown: false }}
             options={{ title: t("sign_in") }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            // options={{ headerShown: false }}
+            options={{ title: t("sign_up") }}
           />
           <Stack.Screen
             name="Profile"

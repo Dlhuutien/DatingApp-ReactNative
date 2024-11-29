@@ -14,7 +14,7 @@ import { fetchUserData } from "../data/connectMockAPI";
 import axios from "axios";
 import IconMaterial from "react-native-vector-icons/MaterialIcons";
 import { useTranslation } from "react-i18next";
-
+import { calculateAge } from "./redux/calculateAge";
 
 export default UserCard = () => {
   const [usersData, setUsersData] = useState([]);
@@ -99,7 +99,7 @@ export default UserCard = () => {
         <View style={styles.userInfo}>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.userName}>
-              {currentUserMatchWait.name}, {currentUserMatchWait.age}
+              {currentUserMatchWait.name}, {calculateAge(currentUserMatchWait.age)}
             </Text>
             <Icon
               name="shield-checkmark"

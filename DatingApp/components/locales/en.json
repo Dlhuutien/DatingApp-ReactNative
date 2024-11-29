@@ -3,6 +3,7 @@
   "FacebookLogin": "Continue with Facebook",
   "PhoneLogin": "Use phnoe number",
   "sign_in": "Sign In with Phone",
+  "sign_up": "Sign Up with Phone",
   "Terms and Conditions": "Terms and Conditions",
   "Privacy Policy": "Privacy Policy",
   "Switch to Vietnamese": "Switch to Vietnamese",
@@ -38,7 +39,17 @@
 
   "HeartSync": "HeartSync",
   "Enter your phone number": "Enter your phone number",
-  "PhoneNotFound": "Phone number not found!",
+  "Phone number not found!": "Phone number not found!",
+  "Do you want to create a new account?":"Do you want to create a new account?",
+  "Cancel":"Cancel",
+  "Yes":"Yes",
+  "Invalid phone number format!":"Invalid phone number format!",
+
+  "Please fill in all the information!":"Please fill in all the information!",
+  "Sign-up successful!":"Sign-up successful!",
+  "Create New Account":"Create New Account",
+  "Username":"Full name",
+  "You must be at least 18 years old to sign up.":"You must be at least 18 years old to sign up.",
 
   "LocationDistance": "2.0 kilometers away",
   "AboutMe": "About me",
@@ -131,4 +142,5 @@
   "drinks": ["No", "Occasionally", "Socially", "Frequently"],
   "pet": ["No", "Dog", "Cat", "Bird", "Fish", "Other"],
   "child": ["Don't want", "Want one", "Want two"]
+
 }

@@ -7,6 +7,10 @@ import {
   StyleSheet,
   TextInput,
   FlatList,
+  KeyboardAvoidingView, 
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 // import usersData from "../data/usersData";
@@ -19,6 +23,8 @@ export default ChatCard = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(""); // Thêm trạng thái tìm kiếm
+
 
   const [usersData, setUsersData] = useState([]);
   const [messagesData, setMessagesData] = useState([]);
@@ -50,59 +56,22 @@ export default ChatCard = () => {
     setModalVisible(false);
   };
 
-  //   const filteredUsers = usersData.filter(
-  //     (item) => item.id !== currentUser.id
-  //   );
 
-  //   return (
-  //     <>
-  //       {/* Search Bar */}
-  //       <View style={styles.searchSection}>
-  //         <TextInput style={styles.searchText} placeholder="Search" />
-  //       </View>
-
-  //       {/* Matches Section */}
-  //       <TouchableOpacity onPress={() => navigation.navigate("ChatScreen")}>
-  //         <View style={styles.matchesSection}>
-  //           <Text style={styles.matchesTitle}>
-  //             Matches ({filteredUsers.length})
-  //           </Text>
-  //           <FlatList
-  //             data={filteredUsers} // Sử dụng danh sách đã lọc
-  //             horizontal
-  //             showsHorizontalScrollIndicator={false}
-  //             renderItem={({ item }) => (
-  //               <TouchableOpacity
-  //                 onPress={() => navigation.navigate("ChatScreen", { item })}
-  //               >
-  //                 <Image
-  //                   source={{ uri: item.image }}
-  //                   style={styles.matchProfile}
-  //                 />
-  //               </TouchableOpacity>
-  //             )}
-  //             keyExtractor={(item) => item.id.toString()}
-  //           />
-  //         </View>
-  //       </TouchableOpacity>
-
-  //       {/* Chat Title */}
-  //       <Text style={styles.chatTitle}>Chats</Text>
-  //     </>
-  //   );
-  // };
   const renderHeader = () => {
-    // Lọc danh sách để loại bỏ người dùng hiện tại
-    const matchedUsers = usersData.filter(
+   const matchedUsers = usersData.filter(
       (item) =>
-        item.id !== currentUser.id && currentUser.matches?.includes(item.id)
+        item.id !== currentUser.id &&
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
+        currentUser.matches?.includes(item.id)
     );
+  
   
     return (
       <>
         {/* Search Bar */}
         <View style={styles.searchSection}>
-          <TextInput style={styles.searchText} placeholder={t("Search")} />
+          <TextInput style={styles.searchText} placeholder={t("Search")}  value={searchQuery}
+            onChangeText={setSearchQuery}/>
         </View>
   
         {/* Matches Section */}

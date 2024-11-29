@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { fetchMessages } from "../data/connectMockAPI";
 import { useTranslation } from "react-i18next";
+import { calculateAge } from "./redux/calculateAge";
 
 const ChatScreen = ({ route }) => {
   const { item } = route.params;
@@ -115,7 +116,7 @@ const ChatScreen = ({ route }) => {
               <Image source={{ uri: item.image }} style={styles.profileImage} />
               <View style={styles.textContainer}>
                 <Text style={styles.name}>
-                  {item.name}, {item.age}{" "}
+                  {item.name}, {calculateAge(item.age)}{" "}
                   <Icon name="checkmark-circle" size={16} color="skyblue" />
                 </Text>
                 <Text style={styles.subText}>{item.profileDetails.gender}</Text>

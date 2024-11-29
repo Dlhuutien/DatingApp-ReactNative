@@ -3,6 +3,7 @@
   "FacebookLogin": "Đăng nhập với Facebook",
   "PhoneLogin": "Sử dụng số điện thoại",
   "sign_in": "Đăng nhập bằng số điện thoại",
+  "sign_up": "Đăng ký bằng số điện thoại",
   "Terms and Conditions": "Điều khoản và điều kiện",
   "Privacy Policy": "Chính sách bảo mật",
   "Switch to Vietnamese": "Chuyển sang Tiếng Việt",
@@ -36,8 +37,19 @@
 
   "HeartSync": "HeartSync",
   "Enter your phone number": "Nhập số điện thoại của bạn",
-  "PhoneNotFound": "Không tìm thấy số điện thoại!",
+  "Phone number not found!": "Không tìm thấy số điện thoại!",
+  "Do you want to create a new account?":"Bạn có muốn tạo tài khoản mới không?",
+  "Cancel":"Đóng",
+  "Yes":"Tạo",
   "Sign In": "Đăng nhập",
+  "Invalid phone number format!":"Định dạng số điện thoại không hợp lệ!",
+  "Please fill in all the information!":"Vui lòng điền đầy đủ thông tin!",
+  "Sign-up successful!":"Đăng ký thành công!",
+  "Create New Account":"Tạo tài khoản mới",
+  "Username":"Họ và tên",
+  "You must be at least 18 years old to sign up.":"Bạn phải ít nhất 18 tuổi để đăng ký.",
+
+
   "LocationDistance": "Cách 2.0 km",
   "AboutMe": "Giới thiệu về tôi",
   "MyDetails": "Chi tiết của tôi",

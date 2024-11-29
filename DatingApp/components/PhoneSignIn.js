@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -16,7 +17,6 @@ import { setUser } from "./redux/userSlice";
 import { useDispatch } from "react-redux";
 // import userData from "../data/usersData";
 import { fetchUserData } from "../data/connectMockAPI";
-
 import { useTranslation } from "react-i18next";
 
 
@@ -38,16 +38,39 @@ const PhoneSignIn = () => {
       });
   }, []);
 
+  const validatePhoneNumber = (number) => {
+    const phoneRegex = /^[0-9]{10,12}$/;
+    return phoneRegex.test(number);
+  };
+
   const handlePhoneSignIn = () => {
+    if (!validatePhoneNumber(phoneNumber)) {
+      alert(t("Invalid phone number format!"));
+      return;
+    }
     console.log("Phone number entered: ", phoneNumber);
     const user = usersData.find((user) => user.phoneNumber === phoneNumber);
 
     if (user) {
       dispatch(setUser(user));
       navigation.navigate("Profile");
-      // console.log("Thanh cong");
     } else {
-      alert("Phone number not found!");
+      // Hiển thị hộp thoại hỏi người dùng
+      Alert.alert(
+        t("Phone number not found!"),
+        t("Do you want to create a new account?"),
+        [
+          {
+            text: t("Cancel"),
+            style: "cancel",
+          },
+          {
+            text: t("Yes"),
+            onPress: () => navigation.navigate("SignUp", { phoneNumber }),
+          },
+        ],
+        { cancelable: true }
+      );
     }
   };
 

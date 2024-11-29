@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { UserProfileCompletion } from "./UserProfileCompletion";
+import { calculateAge } from "./redux/calculateAge";
 
 export default SubscriptionCard = () => {
   const [selectedTab, setSelectedTab] = useState("Plans");
@@ -35,7 +36,7 @@ export default SubscriptionCard = () => {
         />
         <View style={styles.profileInfo}>
           <Text style={styles.profileName}>
-            {currentUser.name}, {currentUser.age}
+            {currentUser.name}, {calculateAge(currentUser.age)}
           </Text>
           <TouchableOpacity
             style={styles.editProfileButton}
