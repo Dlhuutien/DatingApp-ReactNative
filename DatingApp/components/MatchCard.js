@@ -141,7 +141,7 @@ export default MatchCard = () => {
 
       {/* About Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("About me")}</Text>
+        <Text style={styles.sectionTitle}>{t("About me")} {currentUserMatches.id}</Text>
         <Text style={styles.sectionContent}>
           {currentUserMatches.profileDetails.aboutMe ||
             t("This user has not added a bio.")}
