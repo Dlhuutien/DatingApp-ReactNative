@@ -75,7 +75,7 @@ const SignUp = ({ route }) => {
       name: username,
       age,
       phoneNumber,
-      image: "default-image-url",
+      image: "https://raw.githubusercontent.com/Dlhuutien/DatingApp-ReactNative/main/DatingApp/assets/NotImage.jpg",
       matches: [],
       matchWait: [],
       profileDetails: {},
