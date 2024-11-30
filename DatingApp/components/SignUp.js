@@ -75,10 +75,12 @@ const SignUp = ({ route }) => {
       name: username,
       age,
       phoneNumber,
-      image: "https://raw.githubusercontent.com/Dlhuutien/DatingApp-ReactNative/main/DatingApp/assets/NotImage.jpg",
+      image: "https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/09/1662012185_368_Top-100-hinh-nen-den-dep-full-HD-cho-may.jpg",
       matches: [],
       matchWait: [],
-      profileDetails: {},
+      profileDetails: {
+         "gender": "Other"
+      },
     };
 
     try {
