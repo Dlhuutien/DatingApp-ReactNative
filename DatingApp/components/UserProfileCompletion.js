@@ -16,8 +16,9 @@ export const UserProfileCompletion = () => {
     const filledFields = profileFields.filter(
       field => currentUser.profileDetails[field] && currentUser.profileDetails[field] !== 'Add'
     ).length;
-    const completion = (filledFields / profileFields.length) * 100;
-    return Math.round(completion);
+  
+    const completion = Math.round((filledFields * 100) / profileFields.length);
+    return completion;
   };
 
   const [profileCompletion, setProfileCompletion] = useState(calculateProfileCompletion);
